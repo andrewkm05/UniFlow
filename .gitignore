@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Env
+.venv/
+.env
+
+# Flask/SQLite
+instance/
+*.db
+
+# VS Code
+.vscode/
