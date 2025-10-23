@@ -1,0 +1,43 @@
+:root{
+    --page-bg: #ebe8e3;
+    --text-color: #1c319b;
+    --spine-width: 90px;
+    
+    
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: var(--page-bg);
+    font-family: "Bagel Fat One", sans-serif;
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: var(--spine-width);
+    position: relative;
+}
+
+/* Spiral image */
+
+.page::before {
+    background-image: var(--spiral-url);
+    background-repeat: repeat-y;
+    background-position: left top;
+    background-size: var(--spine-width) auto;
+}
