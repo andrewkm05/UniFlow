@@ -1,0 +1,25 @@
+{%extends "base.html" %}
+
+{% block title %}Welcome ~ UniFlow {% endblock %}
+
+<!--
+The navbar is displayed because in app.py i will do:
+return render_template("home.html", show_nav=True)
+-->
+
+{% block content %}
+<main class="container py-5 my-5 text-center">
+    
+    <h1 class="logo mb-3">
+        Welcome to UniFlow
+    </h1>
+
+    <p class="lead">
+        This is your student hub. Plan, track and... flow!
+    </p>
+
+    <!-- Sections -->
+     
+</main>
+
+{% endblock %}
