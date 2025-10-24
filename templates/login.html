@@ -1,0 +1,50 @@
+{%extends "base.html" %}
+
+{% block title %}Log In ~ UniFlow {% endblock %}
+
+{% block content %}
+
+<section class="container py-5 my-4">
+
+    <!-- Page Title -->
+    <h1 class="text-center my-4 logo">
+        Log In
+    </h1>
+
+    <!-- Form card -->
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-6 col-lg-5">
+
+            <div class="card shadow-lg border-0 rounded-4 p-4">
+
+                <!-- Log In Form -->
+                <form action="{{ url_for('login') }}" method="POST" novalidate>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" for="email">Email</label>
+                        <input class="form-control form-control-lg" type="email" id="email" name="email" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" for="password">Password</label>
+                        <input class="form-control form-control-lg" type="password" id="password" name="password" minlength="6" required>
+                    </div>                
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-lg rounded-pill" type="submit">
+                            Log In
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+
+{% endblock %}
