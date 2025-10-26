@@ -4,3 +4,10 @@ CREATE TABLE IF NOT EXISTS users(
     email TEXT UNIQUE NOT NULL,
     hash TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS schedules(
+    user_id INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
