@@ -7,14 +7,14 @@
 <section class="container py-5 my-4">
 
     <!-- Page title -->
-    <h1 class="text-center mb-4 logo">
+    <h1 class="text-center mb-4 logo form-title">
         Sign Up
     </h1>
 
     <!-- Form card -->
-    <div class="row justify-content-center">
+    <div class="row justify-content-center form-wrap">
 
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-8 col-lg-6 uf-card">
 
             <div class="card shadow-lg border-0 rounded-4 p-4">
 
@@ -46,8 +46,8 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="d-grid">
-                        <button class="btn btn-primary btn-lg rounded-pill" type="submit">
+                    <div class="d-grid submit-cta">
+                        <button class="btn btn-primary btn-lg rounded-pill btn-pill btn-primary-uf" type="submit">
                             Create Account
                         </button>
                     </div>
@@ -55,7 +55,7 @@
                     <!-- Link to LogIn-->
                     <p class="text-center mt-3 mb-0">
                         Already have an account?
-                        <a href="{{ url_for('login') }}">Log In</a>
+                        <a class="form-label" href="{{ url_for('login') }}">Log In</a>
                     </p>
                 </form>
 

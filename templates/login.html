@@ -7,14 +7,14 @@
 <section class="container py-5 my-4">
 
     <!-- Page Title -->
-    <h1 class="text-center my-4 logo">
+    <h1 class="text-center my-4 logo form-title">
         Log In
     </h1>
 
     <!-- Form card -->
-    <div class="row justify-content-center">
+    <div class="row justify-content-center form-wrap">
 
-        <div class="col-12 col-md-6 col-lg-5">
+        <div class="col-12 col-md-6 col-lg-5 uf-card">
 
             <div class="card shadow-lg border-0 rounded-4 p-4">
 
@@ -34,11 +34,16 @@
                     </div>                
 
                     <!-- Submit Button -->
-                    <div class="d-grid">
-                        <button class="btn btn-primary btn-lg rounded-pill" type="submit">
+                    <div class="d-grid submit-cta">
+                        <button class="btn btn-primary btn-lg rounded-pill btn-primary-uf btn-pill" type="submit">
                             Log In
                         </button>
                     </div>
+
+                    <p class="text-center mt-3 mb-0">
+                        New here?
+                        <a class="form-label" href="{{ url_for('signup') }}">Create an account</a>
+                    </p>
                 </form>
 
             </div>

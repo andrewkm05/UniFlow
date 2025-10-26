@@ -17,9 +17,10 @@ CREATE TABLE IF NOT EXISTS users(
 );
 """
 
-@app.before_first_request
-def init_db():
+try:
     db.execute(CREATE_USERS_SQL)
+except Exception as e:
+    print("DB init error:", e)
 
 # ================ ROUTES ================
 
@@ -54,7 +55,7 @@ def signup():
 
         try:
             db.execute(
-                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)"
+                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)",
                 username, email, pw_hash
             )
         
@@ -73,7 +74,7 @@ def signup():
         flash("Account created! Please log in.", "success")
         return redirect(url_for("login"))
 
-    return render_template("signup", show_nav=False)
+    return render_template("signup.html", show_nav=False)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -118,7 +119,5 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
 
 
