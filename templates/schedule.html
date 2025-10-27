@@ -4,77 +4,90 @@
 
 {% block content %}
 
-<div class="container py-4">
+<div class="container py-5">
 
     <!-- Header row: Title and Actions-->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
-        <h1 class="m-0 logo">Weekly Schedule</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h1 class="fw-bold display-6 text-uppercase">Weekly Schedule</h1>
 
         <div class="d-flex gap-2">
             <!-- Edit button-->
-            <button id="toggle-edit" class="btn btn-pill btn-primary-uf">
+            <button id="add-btn" class="btn btn-pill btn-primary-uf">
                 Edit
             </button>
 
             <!-- Clear Table button-->
-            <button id="clear-table" class="btn btn-pill btn-outline-uf">
+            <button id="clear-btn" class="btn btn-pill btn-outline-uf">
                 Clear table
             </button>
         </div>
     </div>
 
     <!-- Week grid -->
-    <div class="table-responsive">
-        <div class="week-grid" role="grid" aria-label="Weekly Schedule">
+    <div class="row g-3" id="week">
+        {% set days = ["Monday", "Tuesday", "Wednsday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+        {% for d in days %}
+        <div class="col-12 col-md-6 col-lg-3 col-xl">
+            <div class="card h-100 shadow-sm">
+                <!-- "Days" headers -->
+                <div class="card-header fw-bold text-center text-uppercase" style="background-color: #403518;">
+                    {{d}}
+                </div>
 
-            <!-- Day headers -->
-            <div class="day-head" data-day="0">MONDAY</div>
-            <div class="day-head" data-day="1">TUESDAY</div>
-            <div class="day-head" data-day="2">WEDNESDAY</div>
-            <div class="day-head" data-day="3">THURSDAY</div>
-            <div class="day-head" data-day="4">FRIDAY</div>
-            <div class="day-head" data-day="5">SATURDAY</div>
-            <div class="day-head" data-day="6">SUNDAY</div>
-
-            <!-- Day columns -->
-            <div class="day-col" data-day="0" role="gridcell" aria-label="Monday"></div>
-            <div class="day-col" data-day="1" role="gridcell" aria-label="Tuesday"></div>
-            <div class="day-col" data-day="2" role="gridcell" aria-label="Wednesday"></div>
-            <div class="day-col" data-day="3" role="gridcell" aria-label="Thursday"></div>
-            <div class="day-col" data-day="4" role="gridcell" aria-label="Friday"></div>
-            <div class="day-col" data-day="5" role="gridcell" aria-label="Saturday"></div>
-            <div class="day-col" data-day="6" role="gridcell" aria-label="Sunday"></div>
+                <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}></ul>
+            </div>
         </div>
+        {% endfor %}
     </div>
 
     <!-- Mini form for editing/adding events (hidden at first place)-->
-    <form id="event-form" class="event-form card shadow border-0 p-3 mt-4" hidden>
-        <h2 class="h5 fw-bold mb-3">Add item</h2>
+    <div id="form-wrap" class="card shadow p-3 mt-4 d-none" style="max-width: 700px;">
+        <h2 class="h5 fw-bold mb-3">Add / Edit task</h2>
 
         <div class="row g-3">
-            <label for="evt-title" class="form-label fw-semibold">Title</label>
-            <input id="evt-title" name="Title" type="text" class="form-control" required placeholder="e.g Algorithms">
-        </div>
 
-        <div class="col-6 col-md-3">
-            <label for="evt-start" class="form-label fw-semibold">Start</label>
-            <input id="evt-start" name="start" type="time" class="form-control" required value="14:00" step="300">
-        </div>
+            <div class="col-12 col-md-3">
 
-        <div class="col-6 col-md-3">
-            <label for="evt-end" class="form-label fw-semibold">End</label>
-            <input id="evt-end" name="end" type="time" class="form-control" required value="15:20" step="300">
-        </div>
+                <!-- Select day -->
+                <label class="form-label">Day</label>
+                <select id="f-day" class="form-select">
+                    <option value="0">Monday</option>
+                    <option value="1">Tuesday</option>
+                    <option value="2">Wednsday</option>
+                    <option value="3">Thursday</option>
+                    <option value="4">Friday</option>
+                    <option value="5">Saturday</option>    
+                    <option value="6">Sunday</option>
+                </select>
+            </div>
 
-        <!-- Set from JS when the user clicks on that particular day -->
-        <input type="hidden" name="day" id="evt-day">
+            <!-- Hours -->
+            <div class="col-12 col-md-3">
+                <label class="form-label">Start</label>
+                <input type="time" id="f-start" class="form-control" value="14:00" required>
+            </div>
 
-        <div class="col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-pill btn-primary-uf">Save</button>
-            <button type="button" id="event-cancel" class="btn btn-pill btn-outline-uf">Cancel</button>
+            <div class="col-12 col-md-3">
+                <label class="form-label">End</label>
+                <input type="time" id="f-end" class="form-control" value="15:20" required>
+            </div>
+
+            <!-- Title -->
+            <div class="col-12 col-md-3">
+                <label class="form-label">Title</label>
+                <input type="text" id="f-title" class="form-control" placeholder="e.g. Algorithms Lecture" required>
+            </div>
+
+            <!-- Save Buttons -->
+            <div class="col-12 d-flex gap-2">
+                <button id="save-item" class="btn btn-pill btn-primary-uf">Save</button>
+                <button id="cancel-item" class="btn btn-pill btn-outline-uf">Cancel</button>
+            </div>
         </div>
-    </form>
+    </div>
 
 </div>
+
+<script src="{{ url_for('static', filename='js/schedule.js') }}" defer></script>
 
 {% endblock %}
