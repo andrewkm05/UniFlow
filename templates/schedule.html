@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule ~ UniFlow{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Header row: Title and Actions-->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+        <h1 class="m-0 logo">Weekly Schedule</h1>
+
+        <div class="d-flex gap-2">
+            <!-- Edit button-->
+            <button id="toggle-edit" class="btn btn-pill btn-primary-uf">
+                Edit
+            </button>
+
+            <!-- Clear Table button-->
+            <button id="clear-table" class="btn btn-pill btn-outline-uf">
+                Clear table
+            </button>
+        </div>
+    </div>
+
+    <!-- Week grid -->
+    <div class="table-responsive">
+        <div class="week-grid" role="grid" aria-label="Weekly Schedule">
+
+            <!-- Day headers -->
+            <div class="day-head" data-day="0">MONDAY</div>
+            <div class="day-head" data-day="1">TUESDAY</div>
+            <div class="day-head" data-day="2">WEDNESDAY</div>
+            <div class="day-head" data-day="3">THURSDAY</div>
+            <div class="day-head" data-day="4">FRIDAY</div>
+            <div class="day-head" data-day="5">SATURDAY</div>
+            <div class="day-head" data-day="6">SUNDAY</div>
+
+            <!-- Day columns -->
+            <div class="day-col" data-day="0" role="gridcell" aria-label="Monday"></div>
+            <div class="day-col" data-day="1" role="gridcell" aria-label="Tuesday"></div>
+            <div class="day-col" data-day="2" role="gridcell" aria-label="Wednesday"></div>
+            <div class="day-col" data-day="3" role="gridcell" aria-label="Thursday"></div>
+            <div class="day-col" data-day="4" role="gridcell" aria-label="Friday"></div>
+            <div class="day-col" data-day="5" role="gridcell" aria-label="Saturday"></div>
+            <div class="day-col" data-day="6" role="gridcell" aria-label="Sunday"></div>
+        </div>
+    </div>
+
+    <!-- Mini form for editing/adding events (hidden at first place)-->
+    <form id="event-form" class="event-form card shadow border-0 p-3 mt-4" hidden>
+        <h2 class="h5 fw-bold mb-3">Add item</h2>
+
+        <div class="row g-3">
+            <label for="evt-title" class="form-label fw-semibold">Title</label>
+            <input id="evt-title" name="Title" type="text" class="form-control" required placeholder="e.g Algorithms">
+        </div>
+
+        <div class="col-6 col-md-3">
+            <label for="evt-start" class="form-label fw-semibold">Start</label>
+            <input id="evt-start" name="start" type="time" class="form-control" required value="14:00" step="300">
+        </div>
+
+        <div class="col-6 col-md-3">
+            <label for="evt-end" class="form-label fw-semibold">End</label>
+            <input id="evt-end" name="end" type="time" class="form-control" required value="15:20" step="300">
+        </div>
+
+        <!-- Set from JS when the user clicks on that particular day -->
+        <input type="hidden" name="day" id="evt-day">
+
+        <div class="col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-pill btn-primary-uf">Save</button>
+            <button type="button" id="event-cancel" class="btn btn-pill btn-outline-uf">Cancel</button>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}
