@@ -11,3 +11,18 @@ CREATE TABLE IF NOT EXISTS schedules(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS applies(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    company TEXT NOT NULL,
+    programme TEXT NOT NULL,
+    opening DATE,
+    closing DATE,
+    cv TEXT,
+    cover_letter TEXT,
+    written answers TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
