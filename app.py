@@ -117,6 +117,10 @@ def logout():
     flash("Logged out succesfully.", "info")
     return redirect(url_for("welcome"))
 
+@app.route("/schedule")
+def schedule():
+    return render_template("schedule.html", show_nav=True)
+
 if __name__ == "__main__":
     app.run(debug=True)
 
