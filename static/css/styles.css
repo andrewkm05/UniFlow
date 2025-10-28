@@ -35,7 +35,7 @@ body{
 }
 
 /* Google Font only for logos and headings */
-.logo, .brand, h1, h2, h3{
+.logo, .brand, h1, h2, h3, .h5{
     font-family: "Bagel Fat One", cursive;
     color: var(--uf-brown);
 }
@@ -112,6 +112,10 @@ body{
     background: var(--uf-brown);
     color: #fff;
     transform: translateY(-2px);
+}
+
+.delete-btn:hover{
+    box-shadow: var(--shadow-soft);
 }
 
 /* The welcome page buttons appears in a column */

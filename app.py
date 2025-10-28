@@ -35,7 +35,7 @@ def signup():
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
-        confirm = request.form.get("password", "")
+        confirm = request.form.get("confirm", "")
 
         # Validation:
 
@@ -51,7 +51,7 @@ def signup():
             flash("Please enter a valid email address.", "warning")
             return redirect(url_for("signup"))
 
-        pw_hash = generate_password_hash(password)
+        pw_hash = generate_password_hash(password, method="pbkdf2:sha256", salt_length=16)
 
         try:
             db.execute(
@@ -107,7 +107,7 @@ def login():
 @app.route("/home")
 def home():
     if "user_id" not in session:
-        return render_template(url_for("login"))
+        return redirect(url_for("login"))
     
     return render_template("home.html", show_nav=True, username=session.get("username"))
 

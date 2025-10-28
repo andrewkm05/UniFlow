@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="container py-5">
+<div class="container py-5" style="margin-top: 40px;">
 
     <!-- Header row: Title and Actions-->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
@@ -18,7 +18,7 @@
 
             <!-- Clear Table button-->
             <button id="clear-btn" class="btn btn-pill btn-outline-uf">
-                Clear table
+                Clear
             </button>
         </div>
     </div>
@@ -30,7 +30,7 @@
         <div class="col-12 col-md-6 col-lg-3 col-xl">
             <div class="card h-100 shadow-sm">
                 <!-- "Days" headers -->
-                <div class="card-header fw-bold text-center text-uppercase" style="background-color: #403518;">
+                <div class="card-header fw-bold text-center text-uppercase">
                     {{d}}
                 </div>
 
@@ -42,7 +42,7 @@
 
     <!-- Mini form for editing/adding events (hidden at first place)-->
     <div id="form-wrap" class="card shadow p-3 mt-4 d-none" style="max-width: 700px;">
-        <h2 class="h5 fw-bold mb-3">Add / Edit task</h2>
+        <h2 class="h5 fw-bold mb-3">Add task</h2>
 
         <div class="row g-3">
 

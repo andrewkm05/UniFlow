@@ -30,33 +30,38 @@ function renderSchedule() {
             const li = document.createElement('li');
             li.className = "list-group-item d-flex justify-content-between align-items-center";
 
-            // Text: title and time
+            // Text: title, time and delete button (x)
             li.innerHTML = `
             <span>
-                <strong>${item.title}</strong> ${item.start}-${item.end}
+                <strong>${item.title}</strong> <br>${item.start}-${item.end}
             </span>
+            <button class="btn btn-sm delete-btn" style="border: none;" data-day="${day}" data-index="${index}">
+                x  
+            </button>
             `;
 
             weekLists[day].appendChild(li);
         });
     }
 
-    // Activate delete button
+    // Activate delete button (x)
     document.querySelectorAll('.delete-btn').forEach(btn =>{
         btn.addEventListener('click', (e) => {
             const d = e.target.getAttribute('data-day');
             const i = e.target.getAttribute('data-index');
-
-            schedule.days[d].splice(i, 1);
-            saveToStorage();
-            renderSchedule();
+            
+            if (confirm("Delete this event?")){
+                schedule.days[d].splice(i, 1);
+                saveToStorage();
+                renderSchedule();
+            }
         });
     });
 }
 
 // Save function
 function saveToStorage() {
-    localStorage.setItem('schedule'. JSON.stringify(schedule));
+    localStorage.setItem('schedule', JSON.stringify(schedule));
 }
 
 // Add new item function
