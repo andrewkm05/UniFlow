@@ -365,7 +365,7 @@ body.schedule{
 .table-wrap{
     overflow-x: auto;
     overflow-y: hidden;
-    border-radius: 12px;
+    border-radius: 16px;
     background: #fff;
     box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
     padding: 12px;
@@ -374,8 +374,8 @@ body.schedule{
 
 .applies-table{
     border-collapse: separate;
-    border-spacing: 0 14px;
-    min-width: 1600px;
+    border-spacing: 0 16px;
+    min-width: 2500px;
 }
 
 /* Header */
@@ -421,6 +421,7 @@ body.schedule{
     padding: 10px 12px;
     background: #fff;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .applies-table textarea{
@@ -434,13 +435,37 @@ body.schedule{
     align-items: center;
 }
 
-.btn-save{
+.applies-table td:nth-child(1){min-width: 180px;}
+.applies-table td:nth-child(2){min-width: 300px;}
+.applies-table td:nth-child(3){min-width: 300px;}
 
+.applies-table td:nth-child(4),
+.applies-table td:nth-child(5){min-width: 180px;}
+
+.applies-table td:nth-child(6),
+.applies-table td:nth-child(7),
+.applies-table td:nth-child(8){min-width: 130px;}
+
+.applies-table td:nth-child(9){min-width: 400px;}
+.applies-table td:nth-child(10){min-width: 100px;}
+
+
+
+.btn-save, .btn-del{
+    border-color: var(--uf-brown-dark);
 }
 
-.btn-del{
-
+.btn-save:hover, .btn-del:hover{
+    border-color: var(--uf-brown-dark);
+    border-width: 2px;
 }
+
+.btn-save:active, .btn-del:active{
+    background-color: var(--uf-brown-200);
+    border-color: var(--uf-brown-dark);
+    border-width: 2px;
+}
+
 
 /* Deadlines highlights */
 .deadline-soon{
@@ -455,6 +480,7 @@ body.schedule{
     background-color: #fff0f0 !important;
     color: #660000 !important;
     font-weight: 600;
+    border-width: 6px;
 }
 
 /* ============ Mobile tweaks ============ */

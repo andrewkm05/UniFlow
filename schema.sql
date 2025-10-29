@@ -24,5 +24,6 @@ CREATE TABLE IF NOT EXISTS applies(
     cover_letter TEXT,
     written answers TEXT,
     notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );

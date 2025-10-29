@@ -107,7 +107,7 @@ function renderRow(row) {
         <td>
             <div class="row-actions">
                 <button class="btn btn-sm btn-save rounded-pill px-3">Save</button>
-                <button class="btn btn-sm btn-del rounded-pill px-3">x</button>
+                <button class="btn btn-sm btn-del rounded-pill px-3">Delete</button>
             </div>
         </td>
     `;
@@ -168,7 +168,7 @@ function saveRow(tr) {
 
     const idx = rows.findIndex(x => x.id === data.id);
     if (idx >= 0)
-            rows[idx] = data;
+        rows[idx] = data;
     
     saveRows(rows);
     checkDeadlines();
