@@ -4,6 +4,8 @@
     --bg: #ebe8e3; /* Page background color */
     --uf-brown: #5d4404; /* Main color */
     --uf-brown-dark: #433103;
+    --uf-brown-200: #f2eadb;
+    --uf-brown-600: #524012;
     --text: #403518;
 
     --nav-h: 64px;
@@ -358,6 +360,102 @@ body.schedule{
     background: rgba(225, 225, 225, .25);
 }
 
+/* ============ Applies Page ============ */
+
+.table-wrap{
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    padding: 12px;
+    margin-bottom: 40px;
+}
+
+.applies-table{
+    border-collapse: separate;
+    border-spacing: 0 14px;
+    min-width: 1600px;
+}
+
+/* Header */
+.applies-table thead th{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--uf-brown);
+    color: #fff;
+    font-weight: 600;
+    padding: 14px 16px;
+    border-right: 2px solid #fff1;
+}
+
+.applies-table thead th:first-child{
+    border-top-left-radius: 12px;
+}
+
+.applies-table thead th:last-child{
+    border-top-right-radius: 12px;
+}
+
+
+/* Row card */
+.applies-table tbody tr{
+    background: var(--uf-brown-200);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+    border-radius: 12px;
+}
+
+.applies-table tbody td{
+    padding: 10px 12px;
+}
+
+/* Inputs fill-width */
+.applies-table input[type="text"],
+.applies-table input[type="date"],
+.applies-table select,
+.applies-table textarea{
+    width: 100%;
+    border: 2px solid var(--uf-brown-200);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    outline: none;
+}
+
+.applies-table textarea{
+    min-height: 42px;
+}
+
+/* Actions */
+.row-actions{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-save{
+
+}
+
+.btn-del{
+
+}
+
+/* Deadlines highlights */
+.deadline-soon{
+    border-color: #832b28 !important;
+    background-color: #fff0f0 !important;
+    color: #a94442 !important;
+    transition: all .2s ease;
+}
+
+.deadline-passed{
+    border-color: #b30000 !important;
+    background-color: #fff0f0 !important;
+    color: #660000 !important;
+    font-weight: 600;
+}
 
 /* ============ Mobile tweaks ============ */
 @media (max-width: 576px){
