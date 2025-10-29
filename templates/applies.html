@@ -4,196 +4,43 @@
 
 {% block content %}
 
-<div class="container-xxl py-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
+<div class="applies-page container-fluid px-4" style="margin-top: 90px;">
+
+    <!-- Page title and Add button-->
+    <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
         <h1 class="fw-bold display-6 text-uppercase">Applies</h1>
 
-        <div class="d-flex gap-2">
-
-            <!-- Add+ button -->
-            <button id="btnAddRow" class="btn btn-pill btn-primary-uf">
-                Add +
-            </button>
-        </div>
+        <button id="addRowBtn" class="btn btn-pill btn-primary-uf">
+            Add +
+        </button>
     </div>
 
-    <!-- Horizontal scroll wraper -->
-    <div class="table-scroll-x shadow-sm rounded-4">
-        <table class="table table-hover align-middle applies-table">
+    <!-- Scroll wrapper -->
+    <div class="table-wrap">
+        <table class="applies-table">
             <thead>
-                <th class="sticky-col start-0">Status</th>
-                <th class="sticky-head">Company</th>
-                <th class="sticky-head">Programme</th>
-                <th class="sticky-head">Opening Date</th>
-                <th class="sticky-head">Closing Date</th>
-                <th class="sticky-head">CV</th>
-                <th class="sticky-head">Cover Letter</th>
-                <th class="sticky-head">Written Answers</th>
-                <th class="sticky-head">Notes</th>
-                <th class="sticky-head text-end">Actions</th>
+                <tr>
+                    <th style="max-width:170px">Status</th>
+                    <th style="max-width:250px">Company Name</th>
+                    <th style="max-width:300px">Programme Name</th>
+                    <th style="max-width:160px">Opening date</th>
+                    <th style="max-width:160px">Closing date</th>
+                    <th style="max-width:120px">CV</th>
+                    <th style="max-width:150px">Cover Letter</th>
+                    <th style="max-width:170px">Written Answers</th>
+                    <th style="max-width:320px">Notes</th>
+                    <th style="max-width:150px">Actions</th>
+                </tr>
             </thead>
 
             <tbody id="appliesBody">
-                <tr>
-                    <td class="sticky-col start-0" style="background: var(--page-bg);">
-                        <select class="form-select form-select-sm status-select">
-                            <option>Not Applied</option>
-                            <option>Interested</option>
-                            <option>Application Submitted</option>
-                            <option>Online Assessment</option>
-                            <option>Case Study</option>
-                            <option>HireVue</option>
-                            <option>Telephone Interview</option>
-                            <option>Video Interview</option>
-                            <option>Face-to-Face Interview</option>
-                            <option>Assessment centre</option>
-                            <option>Offer Received</option>
-                            <option>Rejected</option>
-                            <option>Not interested</option>                        
-                        </select>
-                    </td>
-
-                    <td><input class="form-control form-control-sm" placeholder="Company Name"></td>
-                    <td><input class="form-control form-control-sm" placeholder="Programme Name"></td>
-
-                    <td><input type="date" class="form-control form-control-sm"></td>
-                    <td><input type="date" class="form-control form-control-sm"></td>
-
-                    <td>
-                        <select class="form-select form-select-sm">
-                            <option>Yes</option>
-                            <option>No</option>
-                        </select>
-                    </td>
-
-                    <td>
-                        <select class="form-select form-select-sm">
-                            <option>Yes</option>
-                            <option>No</option>
-                            <option>Optional</option>
-                        </select>
-                    </td>
-
-                    <td>
-                        <select class="form-select form-select-sm">
-                            <option>Yes</option>
-                            <option>No</option>
-                            <option>Optional</option>
-                        </select>
-                    </td>
-
-                    <td>
-                        <textarea class="form-control form-control-sm" rows="1" placeholder="Notes"></textarea>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-uf me-2 btnSave">Save</button>
-                        <button class="btn btn-sm btn-danger btnDelete">x</button>
-                    </td>
-                </tr>
+                <!-- the will be created with js -->
             </tbody>
         </table>
     </div>
+    
 </div>
 
-<!-- Modal for "Add +"-->
-<div class="modal fade" id="addRowModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-
-        <form class="modal-content" id="addForm">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Application</h5>
-
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body g-2">
-                <div class="mb-2">
-                    <label class="form-label">Company Name</label>
-                    <input class="form-control" name="company" required>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label">Programme Name</label>
-                    <input class="form-control" name="company" required>
-                </div>
-
-                <div class="row">
-                    <div class="col-6 mb-2">
-                        <label class="form-label">Opening Date</label>
-                        <input type="date" class="form-control" name="opening">
-                    </div>
-
-                    <div class="col-6 mb-2">
-                        <label class="form-label">Closing Date</label>
-                        <input type="date" class="form-control" name="closing">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-4 mb-2">
-                        <label class="form-label">CV</label>
-                        <select class="form-select" name="cv">
-                            <option>Yes</option>
-                            <option>No</option>
-                        </select>
-                    </div>
-
-                    <div class="col-4 mb-2">
-                        <label class="form-label">Cover Letter</label>
-                        <select class="form-select" name="cover">
-                            <option>Yes</option>
-                            <option>No</option>
-                            <option>Optional</option>
-                        </select>
-                    </div>
-
-                    <div class="col-4 mb-2">
-                        <label class="form-label">Written Answers</label>
-                        <select class="form-select" name="written">
-                            <option>Yes</option>
-                            <option>No</option>
-                            <option>Optional</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" name="status">
-                        <option>Not Applied</option>
-                        <option>Interested</option>
-                        <option>Application Submitted</option>
-                        <option>Online Assessment</option>
-                        <option>Case Study</option>
-                        <option>HireVue</option>
-                        <option>Telephone Interview</option>
-                        <option>Video Interview</option>
-                        <option>Face-to-Face Interview</option>
-                        <option>Assessment centre</option>
-                        <option>Offer Received</option>
-                        <option>Rejected</option>
-                        <option>Not interested</option>
-                    </select>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label">Notes</label>
-                    <textarea class="form-control" name="notes" rows="2"></textarea>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-outline-uf" data-bs-dismiss="modal" type="button">
-                    Cancel
-                </button>
-
-                <button class="btn btn-primary-uf" type="submit">
-                    Add
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<script src="{{ url_for('static', filename='js/applies.js') }}"></script>
 
 {% endblock %}
