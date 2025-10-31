@@ -453,6 +453,8 @@ body.schedule{
 
 .btn-save, .btn-del{
     border-color: var(--uf-brown-dark);
+    padding: 2px 2px 3px 3px;
+    font-size: 11px;
 }
 
 .btn-save:hover, .btn-del:hover{

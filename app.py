@@ -121,6 +121,10 @@ def logout():
 def schedule():
     return render_template("schedule.html", show_nav=True)
 
+@app.route("/applications")
+def applications():
+    return render_template("applications.html", show_nav=True)
+
 if __name__ == "__main__":
     app.run(debug=True)
 

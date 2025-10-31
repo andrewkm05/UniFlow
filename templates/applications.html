@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Applications ~ UniFlow{% endblock %}
+
+{% block content %}
+<div class="container-l" style="margin-top: 80px; margin-left: 50px; margin-right: 50px;">
+
+    <!-- Title and Add button -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="fw-bold display-6 text-uppercase">APPLICATIONS</h1>
+
+        <button id="addRowBtn" class="btn btn-primary-uf rounded-pill px-4">
+            Add +
+        </button>
+    </div>
+
+    <!-- Table card -->
+    <div class="table-card">
+        <div class="card-body p-0">
+
+            <!-- Horizontal scroll wraper -->
+            <div class="table-wrap">
+                <table class="applies-table">
+
+                    <thead>
+                        <tr>
+                            <th class="col-status">Status</th>
+                            <th class="col-company">Company Name</th>
+                            <th class="col-programme">Programme Name</th>
+                            <th class="col-open">Opening Date</th>
+                            <th class="col-close">Closing date</th>
+                            <th class="col-cv">CV</th>
+                            <th class="col-cover">Cover Letter</th>
+                            <th class="col-written">Written Answers</th>
+                            <th class="col-notes">Notes</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="appsBody">
+                        <tr>
+                            <td>
+                                <select class="form-select">
+                                    <option>Not Applied</option>
+                                    <option>Interested</option>
+                                    <option>Application Submitted</option>
+                                    <option>Online Assessment</option>
+                                    <option>Case Study</option>
+                                    <option>HireVue</option>
+                                    <option>Telephone Interview</option>
+                                    <option>Video Interview</option>
+                                    <option>Face-to-face Interview</option>
+                                    <option>Assessment Centre</option>
+                                    <option>Offer Received</option>
+                                    <option>Rejected</option>
+                                    <option>Not Interested</option>
+                                </select>
+                            </td>
+
+                            <td><input class="form-control" type="text" placeholder="Company"></td>
+                            <td><input class="form-control" type="text" placeholder="Programme"></td>
+                            <td><input class="form-control" type="date"></td>
+                            <td><input class="form-control fld-close" type="date"></td>
+
+                            <td>
+                                <select class="form-select">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <select class="form-select">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                    <option>Optional</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <select class="form-select">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                    <option>Optional</option>
+                                </select>
+                            </td>
+
+                            <td><textarea class="form-control" placeholder="Notes"></textarea></td>
+
+                            <div class="row-actions">
+                                <td>
+                                    <button class="btn btn-pill btn-save">Save</button>
+                                    <button class="btn btn-pill btn-del">Delete</button>                        
+                                </td>  
+                            </div>                          
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/applications.js') }}" defer></script>
+
+{% endblock %}
