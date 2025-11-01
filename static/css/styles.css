@@ -59,7 +59,7 @@ body{
 }
 
 .alert-danger{
-    background-color: #894545;
+    background-color: #5d0404;
 }
 
 .alert-warning{
@@ -67,7 +67,7 @@ body{
 }
 
 .alert-info{
-    background-color:#cdc1a3;
+    background-color:#62827f;
 }
 
 .alert .btn-close{
@@ -303,7 +303,7 @@ body.schedule{
 .day-col{
     background: #f4efe7;
     border: 2px solid #2c2c2c;
-    border-radius: 12px;
+    border-radius: 1px;
     overflow: hidden;
 
     display: grid;

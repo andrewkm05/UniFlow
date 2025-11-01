@@ -7,42 +7,45 @@
 <div class="container py-5" style="margin-top: 40px;">
 
     <!-- Header row: Title and Actions-->
+    
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <h1 class="fw-bold display-6 text-uppercase">Weekly Schedule</h1>
 
         <div class="d-flex gap-2">
             <!-- Edit button-->
-            <button id="add-btn" class="btn btn-pill btn-primary-uf">
+            <button id="add-btn" class="btn btn-primary-uf rounded-pill px-4">
                 Edit
             </button>
 
             <!-- Clear Table button-->
-            <button id="clear-btn" class="btn btn-pill btn-outline-uf">
+            <button id="clear-btn" class="btn btn-outline-uf rounded-pill px-4">
                 Clear
             </button>
         </div>
     </div>
+    
+    <div class="table-wrap">
+        <!-- Week grid -->
+        <div class="row g-3" id="week">
+            {% set days = ["Monday", "Tuesday", "Wednsday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+            {% for d in days %}
+            <div class="col-12 col-md-6 col-lg-3 col-xl">
+                <div class="card h-100 shadow-sm">
+                    <!-- "Days" headers -->
+                    <div class="card-header fw-bold text-center text-uppercase" style="background-color: var(--uf-brown); color: #fff;">
+                        {{d}}
+                    </div>
 
-    <!-- Week grid -->
-    <div class="row g-3" id="week">
-        {% set days = ["Monday", "Tuesday", "Wednsday", "Thursday", "Friday", "Saturday", "Sunday"] %}
-        {% for d in days %}
-        <div class="col-12 col-md-6 col-lg-3 col-xl">
-            <div class="card h-100 shadow-sm">
-                <!-- "Days" headers -->
-                <div class="card-header fw-bold text-center text-uppercase" style="background-color: var(--uf-brown); color: #fff;">
-                    {{d}}
+                    <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}></ul>
                 </div>
-
-                <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}></ul>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 
     <!-- Mini form for editing/adding events (hidden at first place)-->
     <div id="form-wrap" class="card shadow p-3 mt-4 d-none" style="max-width: 700px;">
-        <h2 class="h5 fw-bold mb-3">Add task</h2>
+        <h2 class="h5 fw-bold mb-3" style="font-size: 200%; letter-spacing: 2px;">Add task</h2>
 
         <div class="row g-3">
 
@@ -50,7 +53,7 @@
 
                 <!-- Select day -->
                 <label class="form-label">Day</label>
-                <select id="f-day" class="form-select">
+                <select id="f-day" class="form-control">
                     <option value="0">Monday</option>
                     <option value="1">Tuesday</option>
                     <option value="2">Wednsday</option>
