@@ -39,59 +39,48 @@
 
                     <tbody id="appsBody">
                         <tr>
-                            <td>
-                                <select class="form-select">
-                                    <option>Not Applied</option>
-                                    <option>Interested</option>
-                                    <option>Application Submitted</option>
-                                    <option>Online Assessment</option>
-                                    <option>Case Study</option>
-                                    <option>HireVue</option>
-                                    <option>Telephone Interview</option>
-                                    <option>Video Interview</option>
-                                    <option>Face-to-face Interview</option>
-                                    <option>Assessment Centre</option>
-                                    <option>Offer Received</option>
-                                    <option>Rejected</option>
-                                    <option>Not Interested</option>
-                                </select>
-                            </td>
+                            <form method="POST" action="{{ url_for('applications_add') }}">
+                                <td>
+                                    <select class="form-select" name="status">
+                                        {% for s in STATUS_CHOICES %}
+                                    </select>
+                                </td>
 
-                            <td><input class="form-control" type="text" placeholder="Company"></td>
-                            <td><input class="form-control" type="text" placeholder="Programme"></td>
-                            <td><input class="form-control" type="date"></td>
-                            <td><input class="form-control fld-close" type="date"></td>
+                                <td><input class="form-control" type="text" placeholder="Company"></td>
+                                <td><input class="form-control" type="text" placeholder="Programme"></td>
+                                <td><input class="form-control" type="date"></td>
+                                <td><input class="form-control fld-close" type="date"></td>
 
-                            <td>
-                                <select class="form-select">
-                                    <option>Yes</option>
-                                    <option>No</option>
-                                </select>
-                            </td>
+                                <td>
+                                    <select class="form-select">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </td>
 
-                            <td>
-                                <select class="form-select">
-                                    <option>Yes</option>
-                                    <option>No</option>
-                                    <option>Optional</option>
-                                </select>
-                            </td>
+                                <td>
+                                    <select class="form-select">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                        <option>Optional</option>
+                                    </select>
+                                </td>
 
-                            <td>
-                                <select class="form-select">
-                                    <option>Yes</option>
-                                    <option>No</option>
-                                    <option>Optional</option>
-                                </select>
-                            </td>
+                                <td>
+                                    <select class="form-select">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                        <option>Optional</option>
+                                    </select>
+                                </td>
 
-                            <td><textarea class="form-control" placeholder="Notes"></textarea></td>
+                                <td><textarea class="form-control" placeholder="Notes"></textarea></td>
 
-                            <td class="row-actions">
-                                <button class="btn btn-pill btn-save">Save</button>
-                                <button class="btn btn-pill btn-del">Delete</button>                        
-                            </td>  
-                         
+                                <td class="row-actions">
+                                    <button class="btn btn-pill btn-save">Save</button>
+                                    <button class="btn btn-pill btn-del">Delete</button>                        
+                                </td>  
+                            </form>
                         </tr>
                     </tbody>
                 </table>
