@@ -454,7 +454,9 @@ body.schedule{
 /* Actions */
 .row-actions{
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
     align-items: center;
 }
 
@@ -474,18 +476,20 @@ body.schedule{
 
 
 
-.btn-save, .btn-del{
+.btn-actions{
     border-color: var(--uf-brown-dark);
-    padding: 2px 2px 3px 3px;
-    font-size: 11px;
+    width: 80px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    padding: 4px 0;
 }
 
-.btn-save:hover, .btn-del:hover{
+.btn-actions:hover{
     border-color: var(--uf-brown-dark);
     border-width: 2px;
 }
 
-.btn-save:active, .btn-del:active{
+.btn-actions:active{
     background-color: var(--uf-brown-200);
     border-color: var(--uf-brown-dark);
     border-width: 2px;
