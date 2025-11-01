@@ -139,7 +139,7 @@ STATUS_CHOICES = [
     "Not Interested"
 ]
 
-CV_CHOISES = ["Yes", "No"]
+CV_CHOICES = ["Yes", "No"]
 OPT_CHOICES = ["Yes", "No", "Optional"]
 
 @app.route("/applications", methods=["GET"])
@@ -156,7 +156,7 @@ def applications_page():
     return render_template("applications.html", show_nav=True, 
         applications = rows, 
         STATUS_CHOICES = STATUS_CHOICES, 
-        CV_CHOISES = CV_CHOISES, 
+        CV_CHOICES = CV_CHOICES, 
         OPT_CHOICES = OPT_CHOICES
     )
 
@@ -175,7 +175,7 @@ def applications_add():
     written = request.form.get("written", "Optional").strip()
     notes = request.form.get("notes", "").strip()
 
-    if status not in STATUS_CHOICES or cv not in CV_CHOISES or cover not in OPT_CHOICES or written not in OPT_CHOICES:
+    if status not in STATUS_CHOICES or cv not in CV_CHOICES or cover not in OPT_CHOICES or written not in OPT_CHOICES:
         flash("Invalid selection.", "warning")
         return redirect(url_for("applications_page"))
     
@@ -212,7 +212,7 @@ def applications_update(app_id):
     written = request.form.get("written", "Optional").strip()
     notes = request.form.get("notes", "").strip()
 
-    if status not in STATUS_CHOICES or cv not in CV_CHOISES or cover not in OPT_CHOICES or written not in OPT_CHOICES:
+    if status not in STATUS_CHOICES or cv not in CV_CHOICES or cover not in OPT_CHOICES or written not in OPT_CHOICES:
         flash("Invalid selection.", "warning")
         return redirect(url_for("applications_page"))
     
