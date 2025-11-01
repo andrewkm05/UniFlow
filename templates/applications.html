@@ -40,134 +40,139 @@
                     <tbody id="appsBody">
 
                         {# --------------- CREATE ROW (POST /applications/add) ---------------#}
-                        <tr>
-                            <form method="post" action="{{ url_for('applications_add') }}">
-                                <td>
-                                    <select class="form-select" name="status">
-                                        {% for s in STATUS_CHOICES %}
-                                            <option {{ 'selected' if s == 'Not Applied' else '' }}>{{ s }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                        <tbody id="createRow" style="display: none;">
+                            <tr>
+                                <form method="post" action="{{ url_for('applications_add') }}">
+                                    <td>
+                                        <select class="form-select" name="status">
+                                            {% for s in STATUS_CHOICES %}
+                                                <option {{ 'selected' if s == 'Not Applied' else '' }}>{{ s }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <input id="create-company" class="form-control" type="text" name="company" placeholder="Company">
-                                </td>
-                                
-                                <td>
-                                    <input class="form-control" type="text" name="programme" placeholder="Programme">
-                                </td>
+                                    <td>
+                                        <input id="create-company" class="form-control" type="text" name="company" placeholder="Company">
+                                    </td>
+                                    
+                                    <td>
+                                        <input class="form-control" type="text" name="programme" placeholder="Programme">
+                                    </td>
 
-                                <td>
-                                    <input class="form-control" name="open_date" type="date">
-                                </td>
+                                    <td>
+                                        <input class="form-control" name="open_date" type="date">
+                                    </td>
 
-                                <td>
-                                    <input class="form-control fld-close" name="close_date" type="date">
-                                </td>
+                                    <td>
+                                        <input class="form-control fld-close" name="close_date" type="date">
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="cv">
-                                        {% for v in CV_CHOICES %}
-                                            <option {{ 'selected' if v == 'Yes' else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="cv">
+                                            {% for v in CV_CHOICES %}
+                                                <option {{ 'selected' if v == 'Yes' else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="cover">
-                                        {% for v in OPT_CHOICES %}
-                                            <option {{ 'selected' if v == 'Optional' else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="cover">
+                                            {% for v in OPT_CHOICES %}
+                                                <option {{ 'selected' if v == 'Optional' else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="written">
-                                        {% for v in OPT_CHOICES %}
-                                            <option {{ 'selected' if v == 'Optional' else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="written">
+                                            {% for v in OPT_CHOICES %}
+                                                <option {{ 'selected' if v == 'Optional' else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <textarea class="form-control" name="notes" placeholder="Notes"></textarea>
-                                </td>
+                                    <td>
+                                        <textarea class="form-control" name="notes" placeholder="Notes"></textarea>
+                                    </td>
 
-                                <td class="row-actions">
-                                    <button class="btn btn-pill btn-save" type="submit">Save</button>                    
-                                </td> 
-                            </form> 
-                        </tr>
+                                    <td class="row-actions">
+                                        <button class="btn btn-pill btn-save" type="submit">Save</button>                    
+                                    </td> 
+                                </form> 
+                            </tr>
+                        </tbody>
 
                         {# --------------- EXISTING ROWS (POST /applications/<id>/update + delete) ---------------#}
                         
-                        {% for app in applications %}
-                        <tr>
-                            <form method="post" action="{{ url_for('applications_update', app_id=app.id) }}">
+                        <tbody id="appsBody">
+                        
+                            {% for app in applications %}
+                            <tr>
+                                <form method="post" action="{{ url_for('applications_update', app_id=app.id) }}">
 
-                                <td>
-                                    <select class="form-select" name="status">
-                                        {% for s in STATUS_CHOICES %}
-                                            <option value="{{ s }}" {{ 'selected' if s == app.status else '' }}>{{ s }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="status">
+                                            {% for s in STATUS_CHOICES %}
+                                                <option value="{{ s }}" {{ 'selected' if s == app.status else '' }}>{{ s }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <input class="form-control" type="text" name="company" value="{{ app.company }}" required>
-                                </td>
-                                
-                                <td>
-                                    <input class="form-control" type="text" name="programme" value="{{ app.programme }}" required>
-                                </td>
+                                    <td>
+                                        <input class="form-control" type="text" name="company" value="{{ app.company }}" required>
+                                    </td>
+                                    
+                                    <td>
+                                        <input class="form-control" type="text" name="programme" value="{{ app.programme }}" required>
+                                    </td>
 
-                                <td>
-                                    <input class="form-control" name="open_date" type="date" value="{{ app.open_date or '' }}">
-                                </td>
+                                    <td>
+                                        <input class="form-control" name="open_date" type="date" value="{{ app.open_date or '' }}">
+                                    </td>
 
-                                <td>
-                                    <input class="form-control fld-close" name="close_date" type="date" value="{{ app.close_date or '' }}">
-                                </td>
+                                    <td>
+                                        <input class="form-control fld-close" name="close_date" type="date" value="{{ app.close_date or '' }}">
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="cv">
-                                        {% for v in CV_CHOICES %}
-                                            <option value="{{ v }}" {{ 'selected' if v == app.cv else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="cv">
+                                            {% for v in CV_CHOICES %}
+                                                <option value="{{ v }}" {{ 'selected' if v == app.cv else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="cover">
-                                        {% for v in OPT_CHOICES %}
-                                            <option value="{{ v }}" {{ 'selected' if v == app.cover else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="cover">
+                                            {% for v in OPT_CHOICES %}
+                                                <option value="{{ v }}" {{ 'selected' if v == app.cover else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <select class="form-select" name="written">
-                                        {% for v in OPT_CHOICES %}
-                                            <option value="{{ v }}" {{ 'selected' if v == app.written else '' }}>{{ v }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
+                                    <td>
+                                        <select class="form-select" name="written">
+                                            {% for v in OPT_CHOICES %}
+                                                <option value="{{ v }}" {{ 'selected' if v == app.written else '' }}>{{ v }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
 
-                                <td>
-                                    <textarea class="form-control" name="notes" placeholder="Notes">{{ app.notes or '' }}</textarea>
-                                </td>
+                                    <td>
+                                        <textarea class="form-control" name="notes" placeholder="Notes">{{ app.notes or '' }}</textarea>
+                                    </td>
 
-                                <td class="row-actions">
-                                    <button class="btn btn-pill btn-save" type="submit">Save</button>
-                            </form>
+                                    <td class="row-actions">
+                                        <button class="btn btn-pill btn-save" type="submit">Save</button>
+                                </form>
 
-                                    <form method="post" action="{{ url_for('applications_delete', app_id=app.id) }}" onsubmit="return confirm('Delete this entry?')">
-                                        <button class="btn btn-pill btn-del" type="submit">Delete</button>
-                                    </form>
-                                </td>
-                        </tr>
-                        {% endfor %}
+                                        <form method="post" action="{{ url_for('applications_delete', app_id=app.id) }}" onsubmit="return confirm('Delete this entry?')">
+                                            <button class="btn btn-pill btn-del" type="submit">Delete</button>
+                                        </form>
+                                    </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                         
                     </tbody>
                 </table>

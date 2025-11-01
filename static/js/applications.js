@@ -61,6 +61,27 @@ function wireTextareaAutosize(scope = document) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    const addBtn = document.getElementById("addRowBtn");
+    const createRow = document.getElementById("createRow");
+
+    if(addBtn && createRow) {
+        addBtn.addEventListener("click", () => {
+
+            if(createRow.style.display === "none" || createRow.style.display === "") {
+                createRow.style.display = "table-row-group";
+
+                const input = document.getElementById("create-company");
+
+                if(input)
+                    input.focus();
+                else
+                    createRow.style.display = "none";
+                
+                addBtn.disabled = true;
+            }
+        });
+    }
+
     paintDeadlines();
 
     document.getElementById("appsBody")?.addEventListener("input", (e) => {
