@@ -52,7 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_applications_close_date ON applications(close_dat
 
 -- Grade Tracker Page --
 
-CREATE TABLE IF NOT EXISTS grade_modules (
+CREATE TABLE IF NOT EXISTS modules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS grade_modules (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS grade_assessments (
+CREATE TABLE IF NOT EXISTS assessments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     module_id INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -71,33 +71,29 @@ CREATE TABLE IF NOT EXISTS grade_assessments (
     score_pct REAL CHECK (score_pct >= 0 AND score_pct <= 100),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (module_id) REFERENCES grade_modules(id) ON DELETE CASCADE
+    FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE CASCADE
 );
 
-CREATE TRIGGER IF NOT EXISTS trg_grade_modules_touch_updated_at
-AFTER UPDATE ON grade_modules
+CREATE TRIGGER IF NOT EXISTS trg_modules_touch_updated
+AFTER UPDATE ON modules
 FOR EACH ROW
 BEGIN
-    UPDATE grade_modules
+    UPDATE modules
     SET updated_at = CURRENT_TIMESTAMP
     WHERE id = NEW.id;
 END;
 
-CREATE TRIGGER IF NOT EXISTS trg_grade_assessments_touch_updated_at
-AFTER UPDATE ON grade_assessments
+CREATE TRIGGER IF NOT EXISTS trg_assessments_touch_updated
+AFTER UPDATE ON assessments
 FOR EACH ROW
 BEGIN
-    UPDATE grade_assessments
+    UPDATE assessments
     SET updated_at = CURRENT_TIMESTAMP
     WHERE id = NEW.id;
 END;
 
-CREATE INDEX IF NOT EXISTS idx_grade_modules_user
-    ON grade_modules(user_id);
+CREATE INDEX IF NOT EXISTS idx_modules_user
+    ON modules(user_id);
 
-CREATE INDEX IF NOT EXISTS idx_grade_assessments_modules
-    ON grade_assessments(module_id);
-
-CREATE INDEX IF NOT EXISTS idx_grade_assessments_weights
-    ON grade_assessments(module_id, weight_pct);
-    
+CREATE INDEX IF NOT EXISTS idx_grade_assess_module
+    ON assessments(module_id);
