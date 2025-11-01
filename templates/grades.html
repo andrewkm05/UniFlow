@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Grades ~ UniFlow{% endblock %}
+
+{% block content %}
+<div class="container-xl" style="margin-top: 80px;">
+
+    <!-- Header: Title + Overall + Add-->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-baseline gap-3">
+
+            <h1 class="fw-bold display-6 text-uppercase">GRADES</h1>
+
+            <span class="badge rounded-pill text-bg-secondary" style="font-size:.95rem; padding:.5rem .8rem;">
+                Overall: {{ overal_avg if overall_avg is not none else '-' }}%
+            </span>
+        </div>
+
+        <form action="{{ url_for('grades_module_add' )}}" method="post" class="m-0">
+            <button type="submit" class="btn btn-primary-uf rounded-pill px-4">
+                Add Module +
+            </button>
+        </form>
+    </div>
+
+    {% if not modules_by_term %}
+        <div class="alert alert-info">No modules yet. Click <strong>Add Module +</strong> to get started</div>
+    {% endif %}
+
+    {% for term, mods in modules_by_term|dictsort %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between bg-light">
+                <div class="d-flex align-items-center gap-3">
+
+                    <h5 class="mb-0"> Term {{ term }}</h5>
+
+                    <span class="badge rounded-pill text-bg-secondary">
+                        Avg: {{ term_summaries[term].avg if term_summaries[term].avg is not none else '-' }}%
+                    </span>
+
+                    <span class="badge rounded-pill text-bg-light text-muted">
+                        Credits: {{ term_summaries[term].credits }}
+                    </span>
+                </div>
+
+                <!-- Add module in the term -->
+                <form action="{{ url_for('grades_module_add') }}?term={{ term }}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-primary-uf rounded-pill px-4">
+                        Add +
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-body p-2">
+
+                {% for m in mods %}
+
+                <!-- Module row (summary and details) -->
+                <div class="module card mb-2" data-module-id="{{ m.id }}">
+
+                    <!-- Summary (can click on it) -->
+                    <button type="button" class="module-toggle btn w-100 text-start p-3" aria-expanded="false" aria-controls="module-body-{{ m.id }}"
+                            style="background: #fff; border:none;">
+                    
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+
+                                <strong class="fs-5">{{ m.name }}</strong>
+
+                                <span class="badge text-bg-light text-muted">ECTS {{ m.credits }}</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">Total weight: <span class="mod-total-weight">{{ m.total_weight }}</span>%</small>
+                                <span class="badge rounded-pill text-bg-secondary mod-grade">
+                                    {{ m.current_grade if m.current_grade is not none else '-' }}%
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Details (hidden by default) -->
+                    <div id="module-body-{{ m.id }}" class="module-body p-3" hidden>
+                        <!--Module form-->
+                        <form action="{{ url_for('grades_module_update', module_id=m.id) }}" method="post" class="row g-2 mb-3">
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small mb-1">Module Name</label>
+                                <input class="form-control" name="name" value="{{ m.name }}" required>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <label class="form-label small mb-1">Term</label>
+                                <select class="form-control" name="term" required>
+                                    {% for t in range (1, 13) %}
+                                        <option value="{{ t }}" {{ 'selected' if m.term==t else '' }}>Term {{ t }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <label class="form-label small mb-1">Credits</label>
+                                <input class="form-control" type="number" name="credits" min="0.5" step="0.5" value="{{ m.credits }}" required>
+                            </div>
+
+                            <div class="col-12 d-flex gap-2">
+                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
+
+                                <form action="{{ url_for('grades_module_delete', module_id=m.id) }}" method="post" onsubmit="return confirm('Delete module and its assessment?')">
+                                    <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </form>
+
+                        <!-- Assessments table -->
+                        <div class="table-wrap">
+                            <table class="applies-table">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width:320px">Assessment Title</th>
+                                        <th style="min-width:3160px">Weight</th>
+                                        <th style="min-width:3160px">Score</th>
+                                        <th style="min-width:3140px">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for a in assessments_by_module.get(m.id, []) %}
+                                    <tr>
+                                        <td>
+                                            <form action="{{ url_for('grades_assessment_update', assessment_id=a.id) }}" method="post" class="row g-2 js-assessment">
+                                                <div class="col-12">
+                                                    <input class="form-control" name="title" value="{{ a.title }}" required>
+                                                </div>
+                                        </td>
+                                        <td class="align-middle">
+                                            <input class="form-control js-weight" type="number" name="weight_pct" value="{{ a.weight_pct }}" min="0" max="100" step="0.5" required>
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <input class="form-control js-score" type="number" name="score" value="{{ a.score if a.score_pct is not none else '' }}" min="0" max="100" step="0.5">
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <div class="row-actions">
+                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
+                                                                               
+                                            </form>
+
+                                            <form action="{{ url_for('grades_assessment_delete', assessment_id=a.id) }}" method="post" onsubmit="return confirm('Delete this assessment?')">
+                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
+                                            </div> 
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                    <!-- Add assessment -->
+                                    <tr class="bg-body-secondary-subtle">
+                                        <td>
+                                            <form action="{{ url_for('grades_assessment_create', module_id=m.id) }}" method="post" class="row g-2 js-assessment">
+                                                <div class="col-12">
+                                                    <input class="form-control" name="title" placeholder="Assessment title" required>
+                                                </div>
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <input class="form-control js-weight" type="number" name="weight_pct" placeholder="e.g. 30" min="0" max="100" step="0.5" required>
+                                        </td>
+
+                                        <td class="align_middle">
+                                            <input class="form-control js-score" type="number" name="score_pct" placeholder="e.g. 75" min="0" max="100" step="0.5">
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <div class="row_actions">
+                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
+                                            </div>
+                                            </form>
+                                        </td>                                            
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Summary row -->
+                        <div class="d-flex justify-content-between small text-muted px-1 pt-2">
+                            <span>Total weight (live): <strong class="mod-weight-live">-</strong>%</span>
+                            <span>Module grade (preview): <strong class="mod-grade-live">-</strong>%</span>
+                        </div>                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='js/grades.js') }}" defer></script>
+
+{% endblock %}

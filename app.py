@@ -514,25 +514,19 @@ def grades_assessment_update(assessment_id):
 
 @app.route("/grades/assessment/<int:assessment_id>/delete", methods=["POST"])
 def grades_assessment_delete(assessment_id):
-     if "user_id" not in session:
+    if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     row = db.execute(
         "SELECT a.module_id, m.user_id FROM assessments a JOIN modules m ON m.id = a.module_id WHERE a.id = ?",
         assessment_id
     )
-
     if not row or row[0]["user_id"] != session["user_id"]:
         abort(403)
-    
-    db.execute(
-        "DELETE FROM assessments WHERE id = ?", assessment_id
-    )
 
-    flash("Assessment deleted", "info")
+    db.execute("DELETE FROM assessments WHERE id = ?", assessment_id)
+    flash("Assessment deleted.", "info")
     return redirect(url_for("grades_page"))
-
-
 
 
 # ===============================
