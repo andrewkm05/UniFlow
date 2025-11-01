@@ -62,7 +62,7 @@
         <!-- For the alerts -->
         {% with msgs = get_flashed_messages(with_categories=True) %}
             {% if msgs %}
-            <div class="container mt-3">
+            <div class="container mt-5" style="position: relative; z-index: 9999; margin-top: 200px;">
                 {% for cat, msg in msgs %}
                 <div class="alert alert-{{ 'warning' if cat=='warning' else cat }} alert-dismissible fade show" role="alert">
                     {{ msg }}
