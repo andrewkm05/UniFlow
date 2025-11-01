@@ -59,23 +59,46 @@
         </nav>
         {% endif %}
 
-        <!-- For the alerts -->
-        {% with msgs = get_flashed_messages(with_categories=True) %}
-            {% if msgs %}
-            <div class="container mt-5" style="position: relative; z-index: 9999; margin-top: 200px;">
-                {% for cat, msg in msgs %}
-                <div class="alert alert-{{ 'warning' if cat=='warning' else cat }} alert-dismissible fade show" role="alert">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        {% endwith %}
-
         <!-- The content of each page will be entered here -->
 
         {% block content %}{% endblock %}
+
+        <!-- For the alerts (FLASH MESSAGES as TOASTS (bottom-rigth)) -->
+        <div id="toastArea" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+            {% with msgs = get_flashed_messages(with_categories=True) %}
+                {% if msgs %}
+                    {% for cat, msg in msgs %}
+                        <div class="toast alert
+                                    alert-{{ 'success' if cat=='success'
+                                                else 'warning' if cat=='warning'
+                                                else 'danger' if cat=='danger'
+                                                else 'info' }}"
+                                role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3500">
+                            
+                            <div class="d-flex">
+                                <div class="toast-body">{{ msg }}</div>
+
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Turn on all the existing toasts in DOM -->
+         <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const area = document.getElementById('toastArea');
+
+                if(!area)
+                    return;
+                
+                area.querySelectorAll('.toast').forEach(el => {
+                    new bootstrap.Toast(el).show();
+                });
+            });
+         </script>
 
         <!-- Alerts close automaticaly: -->
         <script>

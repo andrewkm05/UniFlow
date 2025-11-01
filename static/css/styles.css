@@ -50,6 +50,8 @@ body{
     border: none;
     color: #fff;
     box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
+    transition: all 0.3s ease;
+    margin-top: 10px;
 }
 
 .alert-success{
@@ -61,7 +63,7 @@ body{
 }
 
 .alert-warning{
-    background-color: #a19882;
+    background-color: #6a5a31;
 }
 
 .alert-info{
@@ -79,6 +81,27 @@ body{
 
 .btn-close:active{
     border: none;
+}
+
+/* ============ Toast refinement ============ */
+.toast{
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 180px;
+}
+
+.toast .toast-body{
+    padding: 0.5rem 0.8rem;
+}
+
+.toast .btn-close{
+    transform: scale(0.8);
+    opacity: 0.8;
+}
+
+.toast .btn-close:hover{
+    opacity: 1;
 }
 
 /* ============ Welcome (without navbar) ============ */
