@@ -1,3 +1,5 @@
+-- users Page --
+
 CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEX NOT NULL COLLATE NOCASE UNIQUE,
@@ -5,12 +7,16 @@ CREATE TABLE IF NOT EXISTS users(
     hash TEXT NOT NULL
 );
 
+-- Schedule Page --
+
 CREATE TABLE IF NOT EXISTS schedules(
     user_id INTEGER NOT NULL,
     data TEXT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Applications Page --
 
 CREATE TABLE IF NOT EXISTS applications(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,3 +48,56 @@ END;
 
 CREATE INDEX IF NOT EXISTS idx_applications_user ON applications(user_id);
 CREATE INDEX IF NOT EXISTS idx_applications_close_date ON applications(close_date);
+
+
+-- Grade Tracker Page --
+
+CREATE TABLE IF NOT EXISTS grade_modules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    term INTEGER NOT NULL,
+    credits REAL NOT NULL CHECK (credits > 0),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS grade_assessments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    module_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    weight_pct REAL NOT NULL CHECK (weight_pct >= 0 AND weight_pct <= 100),
+    score_pct REAL CHECK (score_pct >= 0 AND score_pct <= 100),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (module_id) REFERENCES grade_modules(id) ON DELETE CASCADE
+);
+
+CREATE TRIGGER IF NOT EXISTS trg_grade_modules_touch_updated_at
+AFTER UPDATE ON grade_modules
+FOR EACH ROW
+BEGIN
+    UPDATE grade_modules
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_grade_assessments_touch_updated_at
+AFTER UPDATE ON grade_assessments
+FOR EACH ROW
+BEGIN
+    UPDATE grade_assessments
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
+END;
+
+CREATE INDEX IF NOT EXISTS idx_grade_modules_user
+    ON grade_modules(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_grade_assessments_modules
+    ON grade_assessments(module_id);
+
+CREATE INDEX IF NOT EXISTS idx_grade_assessments_weights
+    ON grade_assessments(module_id, weight_pct);
+    
