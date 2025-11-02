@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import SQL
+from datetime import datetime
 import sqlite3
 
 app = Flask(__name__)
@@ -529,9 +530,212 @@ def grades_assessment_delete(assessment_id):
     return redirect(url_for("grades_page"))
 
 
+# ================ ASSIGNMENTS ================
+
+def compute_assignment_status(assignment_id):
+
+    stages = db.execute(
+        "SELECT done FROM assignment_stages WHERE assignment_id = ?", assignment_id
+    )
+    total = len(stages)
+    done = sum(s["done"] for s in stages)
+    progress = (done / total * 100) if total > 0 else 0
+
+    status = (
+        "done" if progress == 100
+        else "in_progress" if done > 0
+        else "pending"
+    )
+
+    db.execute (
+        "UPDATE assignments SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        status, assignment_id
+    )
+
+    return progress, status
+
+
+# ----- main page ------
+@app.route("/assignments")
+def assignments_page():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    user_id = session["user_id"]
+
+    # assignments sorted by priority + due date
+    rows = db.execute (
+        "SELECT * FROM assignments WHERE user_id = ? ORDER BY priority ASC, due_date ASC NULLS LAST",
+        user_id
+    )
+
+    # all stages
+    stages = db.execute (
+        "SELECT * FROM assignment_stages WHERE assignment_id  IN (SELECT id FROM assignments WHERE user_id = ?)",
+        user_id
+    )
+
+    stages_by_assignment = {}
+
+    for s in stages:
+        stages_by_assignment.setdefault(s["assignment_id"], []).append(s)
+    
+    # computing live progress for each assignment
+    for a in rows:
+        stages_list = stages_by_assignment.get(a["id"], [])
+        total = len(stages_list)
+        done = sum(s["done"] for s in stages_list)
+        a["progress"] = (done / total * 100) if total > 0 else 0
+    
+    return render_template("assignments.html", show_nav=True, assignments=rows, stages_by_assignment=stages_by_assignment)
+
+# ------ Add assignment ------
+@app.route("/assignments/add", methods=["POST"])
+def assignments_add():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    title = (request.form.get("title") or "").strip()
+    due_date = request.form.get("due_date")
+    priority = int(request.form.get("prioriry") or 2)
+    notes = request.form.get("notes") or ""
+
+    if not title:
+        flash("Please enter a valid assignment title", "warning")
+        return redirect(url_for("assignments_page"))
+    
+    db.execute(
+        "INSERT INTO assignments (user_id, title, due_date, priority, notes) VALUES (?, ?, ?, ?, ?)",
+        session["user_id"], title, due_date, priority, notes
+    )
+
+    flash("Assignment addes", "success")
+    return redirect(url_for("assignments_page"))
+
+# ------ Update assignment ---------
+@app.route("/assignments/<int:assignment_id>/update", methods=["POST"])
+def assignments_update(assignments_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute (
+        "SELECT user_id FROM assignments WHERE id = ?", assignments_id
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    title = (request.form.get("title") or "").strip()
+    due_date = request.form.get("due_date")
+    priority = int(request.form.get("prioriry") or 2)
+    notes = request.form.get("notes") or ""
+
+    if not title:
+        flash("Please enter a valid assignment title", "warning")
+        return redirect(url_for("assignments_page"))
+    
+    db.execute (
+        "UPDATE assignments SET title = ?, due_date = ?, priority = ?, notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        title, due_date, priority, notes, assignments_id
+    )
+
+    flash("Assignment updated", "success")
+    return redirect(url_for("assignments_page"))
+
+# ------ Delete assignment -------
+@app.route("/assignments/<int:assignment_id>/delete", methods=["POST"])
+def assignments_delete(assignment_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute (
+        "SELECT user_id FROM assignments WHERE id = ?", assignment_id
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    db.execute (
+        "DELETE FROM assignments WHERE id = ?", assignment_id
+    )
+
+    flash("Assignment deleted", "success")
+    return redirect(url_for("assignments_page"))
+
+
+# -------- Add stage ------------
+@app.route("/assignments/<int:assignment_id>/stages/add", methods=["POST"])
+def stage_add(assignment_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    title = (request.form.get("title") or "").strip()
+    if not title:
+        flash("Stage title cannot be empty", "warning")
+        return redirect(url_for("assignments_page"))
+    
+    db.execute (
+        "INSERT INTO assignment_stages (assignment_id, title, position) VALUES (?, ?, ?)",
+        assignment_id, title, 0
+    )
+
+    compute_assignment_status(assignment_id)
+    return redirect(url_for("assignments_page"))
+
+
+# --------- Toggle stage done ----------
+@app.route("/assignments/stages/<int:stage_id>/toggle", methods=["POST"])
+def stage_toggle(stage_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute (
+        "SELECT s.assignment_id, a.user_id, s.done FROM assignment_stages s JOIN assignments a ON s.assignment_id = a.id WHERE s.id = ?",
+        stage_id 
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    done = 0 if row[0]["user_id"] != session["user_id"] else 1
+
+    db.execute (
+        "UPDATE assignment_stages SET done = ? WHERE id = ?", done, stage_id
+    )
+
+    compute_assignment_status(row[0]["assignment_id"])
+
+    flash("Stage updated", "success")
+    return redirect(url_for("assignments_page"))
+
+# ------- Delete stage ---------
+@app.route("/assignments/stages/<int:stage_id>/delete", methods=["POST"])
+def stage_delete(stage_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute (
+        "SELECT s.assignment_id, a.user_id, s.done FROM assignment_stages s JOIN assignments a ON s.assignment_id = a.id WHERE s.id = ?",
+        stage_id 
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    db.execute (
+        "DELETE FROM assignment_stages WHERE id = ?", stage_id
+    )
+
+    compute_assignment_status(row[0]["assignment_id"])
+
+    flash("Stage deleted", "success")
+    return redirect(url_for("assignments_page"))
+    
+
 # ===============================
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
