@@ -1,4 +1,4 @@
--- users Page --
+-- =============== users Page =============== --
 
 CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users(
     hash TEXT NOT NULL
 );
 
--- Schedule Page --
+-- =============== Schedule Page =============== --
 
 CREATE TABLE IF NOT EXISTS schedules(
     user_id INTEGER NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS schedules(
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Applications Page --
+-- =============== Applications Page =============== --
 
 CREATE TABLE IF NOT EXISTS applications(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_applications_user ON applications(user_id);
 CREATE INDEX IF NOT EXISTS idx_applications_close_date ON applications(close_date);
 
 
--- Grade Tracker Page --
+-- =============== Grade Tracker Page =============== --
 
 CREATE TABLE IF NOT EXISTS modules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,3 +97,57 @@ CREATE INDEX IF NOT EXISTS idx_modules_user
 
 CREATE INDEX IF NOT EXISTS idx_grade_assess_module
     ON assessments(module_id);
+
+
+-- =============== Assignments Page =============== --
+
+CREATE TABLE IF NOT EXISTS assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    due_date TEXT,
+    priority INTEGER NOT NULL DEFAULT 2,
+    notes TEXT,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- checklist --
+
+CREATE TABLE IF NOT EXISTS assignments_stages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    assignment_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    done INTEGER NOT NULL DEFAULT 0,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE
+);
+
+CREATE TRIGGER IF NOT EXISTS trg_assignments_touch_updated
+AFTER UPDATE ON assignments
+FOR EACH ROW BEGIN
+    UPDATE assignments
+    set updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_assignments_stages_touch_updated
+AFTER UPDATE ON assignments_stages
+FOR EACH ROW BEGIN
+    UPDATE assignments_stages
+    set updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
+END;
+
+CREATE INDEX IF NOT EXISTS idx_assignments_user_due
+ON assignments(user_id, due_date);
+
+CREATE INDEX IF NOT EXISTS idx_assignments_priority
+ON assignments(priority);
+
+CREATE INDEX IF NOT EXISTS idx_stages_assignment_pos
+ON assignments_stages(assignment_id, position);
