@@ -160,7 +160,8 @@ body{
 }
 
 .btn-primary-uf:hover{
-    background: var(--uf-brown);
+    background: var(--uf-brown-dark);
+    color: #fff;
     transform: translateY(-2px);
     filter: brightness(1.3);
 }
