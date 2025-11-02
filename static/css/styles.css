@@ -512,6 +512,53 @@ body.schedule{
     border-width: 6px;
 }
 
+
+/* ============ Grades page tables ============ */
+
+.grades-table th,
+.grades-table td{
+    min-width: auto !important;
+    width: auto;
+}
+
+.grades-table input.form-control,
+.grades-table select.form-control,
+.grades-table textarea.form-control{
+    height: auto;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
+
+.grades-table .btn{
+    padding: 4px 10px;
+    font-size: 0.85rem;
+}
+
+.grades-table--modules .col-title {
+    min-width: 100px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.grades-table--modules .col-term { width: 110px; }
+.grades-table--modules .col-credits { width: 110px; }
+.grades-table--modules .col-actions { width: 130px; text-align: center; }
+
+.grades-table--assessments .col-title {
+    min-width: 100px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.grades-table--assessments .col-weight { width: 110px; }
+.grades-table--assessments .col-score { width: 110px; }
+.grades-table--assessments .col-actions { width: 130px; text-align: center; }
+
+
+
+
 /* ============ Mobile tweaks ============ */
 @media (max-width: 576px){
     :root{
