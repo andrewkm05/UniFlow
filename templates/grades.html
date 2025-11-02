@@ -95,40 +95,50 @@
                         <!-- MODULE SETTINGS (collapse) -->
                         <div class="collapse" id="mod-settings-{{ m.id }}">
                             <!-- Update form -->
-                            <form action="{{ url_for('grades_module_update', module_id=m.id) }}"
-                                method="post" class="row g-2 mb-2">
+                            <form action="{{ url_for('grades_module_update', module_id=m.id) }}" method="post" class="row g-2 mb-2" id="upd-{{ m.id }}"></form>
 
-                            <div class="col-12 col-md-6">
-                                <label class="form-label small mb-1">Module Name</label>
-                                <input class="form-control" name="name" value="{{ m.name }}" required>
-                            </div>
+                            <div class="table-wrap module-settings mb-3">
+                                <table class="applies-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 150px;">Module Name</th>
+                                            <th style="min-width: 50px;">Term</th>
+                                            <th style="min-width: 50px;">Cedits</th>
+                                            <th style="min-width: 100px;">Actions</th>
+                                        </tr>
+                                    </thead>
 
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-1">Term</label>
-                                <select class="form-control" name="term" required>
-                                {% for t in range(1, 13) %}
-                                    <option value="{{ t }}" {{ 'selected' if m.term==t else '' }}>Term {{ t }}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input class="form-control" name="name" value="{{ m.name }}" required form="upd-{{ m.id }}">
+                                            </td>
 
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-1">Credits</label>
-                                <input class="form-control" type="number" name="credits" min="0.5" step="0.5" value="{{ m.credits }}" required>
-                            </div>
+                                            <td class="align-middle">
+                                                <select class="form-control" name="term" required form="upd-{{ m.id }}">
+                                                    {% for t in range(1,13) %}
+                                                        <option value="{{ t }}" {{ 'selected' if m.term==t else '' }}>Term {{ t }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
 
-                            <div class="col-12">
-                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
-                            </div>
-                            </form>
+                                            <td class="align-middle">
+                                                <input class="form-control" type="number" name="credits" min="0.5" step="0.5" value="{{ m.credits }}" required form="upd-{{ m.id }}">
+                                            </td>
 
-                            <!-- Delete form (separate; no nesting) -->
-                            <form action="{{ url_for('grades_module_delete', module_id=m.id) }}"
-                                method="post"
-                                onsubmit="return confirm('Delete module and its assessments?');"
-                                class="mb-3">
-                            <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
-                            </form>
+                                            <td class="align-middle">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <button class="btn btn-pill btn-actions" type="submit" form="upd-{{ m.id }}">Save</button>
+
+                                                    <form action="{{ url_for('grades_module_delete', module_id=m.id) }}" method="post" onsubmit="return confirm('Delete module and its assessments?');">
+                                                        <button class="btn btn-pill btn-actions" type="submit">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                            
                         </div> 
                         
 
