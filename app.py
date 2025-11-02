@@ -10,7 +10,7 @@ db = SQL()
 
 CREATE_USERS_SQL = """
 CREATE TABLE IF NOT EXISTS users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEget PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
     hash TEXT NOT NULL
@@ -44,7 +44,7 @@ def signup():
             return redirect(url_for("signup"))
         
         if password != confirm:
-            flash("Passwords do not match.", "danger")
+            flash("Passwords do not match.", "danget")
             return redirect(url_for("signup"))
         
         if "@" not in email or "." not in email:
@@ -61,13 +61,13 @@ def signup():
         
         except sqlite3.IntegrityError as e:
             if "username" in str(e):
-                flash("Username already exists. Try another one.", "danger")
+                flash("Username already exists. Try another one.", "danget")
             
             elif "email" in str(e):
                 flash("Email already registered. Try logging in.", "info")
             
             else:
-                flash("Database error. Try again.", "danger")
+                flash("Database error. Try again.", "danget")
             
             return redirect(url_for("signup"))
 
@@ -88,12 +88,12 @@ def login():
         )
 
         if not rows:
-            flash("Invalid email or password.", "danger")
+            flash("Invalid email or password.", "danget")
             return redirect(url_for("login"))
 
         user = rows[0]
         if not check_password_hash(user["hash"], password):
-            flash("Invalid email or password.", "danger")
+            flash("Invalid email or password.", "danget")
             return redirect(url_for("login"))
 
         session["user_id"] = user["id"]
@@ -294,7 +294,7 @@ def grades_page():
     for m in modules:
         #load assessments for each module
         arows = db.execute(
-            "SELECT id, title, weight_pct, source_pct FROM assessments WHERE module_id = ? ORDER BY id",
+            "SELECT id, title, weight_pct, score_pct FROM assessments WHERE module_id = ? ORDER BY id",
             m["id"]
         )
         assessments_by_module[m["id"]] = arows
@@ -445,8 +445,8 @@ def grades_assessment_create(module_id):
     
 
     title = (request.form.get("title") or "").strip()
-    weight_raw = request.form.ger("weight_pct")
-    score_raw =  request.form.ger("score_pct")
+    weight_raw = request.form.get("weight_pct")
+    score_raw =  request.form.get("score_pct")
 
     # parsing numbers safely
     try:
@@ -485,8 +485,8 @@ def grades_assessment_update(assessment_id):
         abort(403)
     
     title = (request.form.get("title") or "").strip()
-    weight_raw = request.form.ger("weight_pct")
-    score_raw =  request.form.ger("score_pct")
+    weight_raw = request.form.get("weight_pct")
+    score_raw =  request.form.get("score_pct")
 
     # parsing numbers safely
     try:

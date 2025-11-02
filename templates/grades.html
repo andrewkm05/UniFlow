@@ -11,7 +11,7 @@
             <h1 class="fw-bold display-6 text-uppercase">GRADES</h1>
 
             <span class="badge rounded-pill text-bg-secondary" style="font-size:.95rem; padding:.5rem .8rem;">
-                Overall: {{ overal_avg if overall_avg is not none else '-' }}%
+                Overall: {{ overall_avg if overall_avg is not none else '-' }}%
             </span>
         </div>
 
@@ -78,10 +78,25 @@
                         </div>
                     </button>
 
-                    <!-- Details (hidden by default) -->
-                    <div id="module-body-{{ m.id }}" class="module-body p-3" hidden>
-                        <!--Module form-->
-                        <form action="{{ url_for('grades_module_update', module_id=m.id) }}" method="post" class="row g-2 mb-3">
+                        <!-- Details (hidden by default) -->
+                        <div class="p-3 pt-0">
+                        <!-- Toggle for module SETTINGS (collapsed by default) -->
+                        <div class="d-flex justify-content-end mb-2">
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#mod-settings-{{ m.id }}"
+                                    aria-expanded="false"
+                                    aria-controls="mod-settings-{{ m.id }}">
+                            Edit module settings
+                            </button>
+                        </div>
+
+                        <!-- MODULE SETTINGS (collapse) -->
+                        <div class="collapse" id="mod-settings-{{ m.id }}">
+                            <!-- Update form -->
+                            <form action="{{ url_for('grades_module_update', module_id=m.id) }}"
+                                method="post" class="row g-2 mb-2">
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label small mb-1">Module Name</label>
@@ -91,9 +106,9 @@
                             <div class="col-6 col-md-3">
                                 <label class="form-label small mb-1">Term</label>
                                 <select class="form-control" name="term" required>
-                                    {% for t in range (1, 13) %}
-                                        <option value="{{ t }}" {{ 'selected' if m.term==t else '' }}>Term {{ t }}</option>
-                                    {% endfor %}
+                                {% for t in range(1, 13) %}
+                                    <option value="{{ t }}" {{ 'selected' if m.term==t else '' }}>Term {{ t }}</option>
+                                {% endfor %}
                                 </select>
                             </div>
 
@@ -102,24 +117,30 @@
                                 <input class="form-control" type="number" name="credits" min="0.5" step="0.5" value="{{ m.credits }}" required>
                             </div>
 
-                            <div class="col-12 d-flex gap-2">
+                            <div class="col-12">
                                 <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
-
-                                <form action="{{ url_for('grades_module_delete', module_id=m.id) }}" method="post" onsubmit="return confirm('Delete module and its assessment?')">
-                                    <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
-                                </form>
                             </div>
-                        </form>
+                            </form>
+
+                            <!-- Delete form (separate; no nesting) -->
+                            <form action="{{ url_for('grades_module_delete', module_id=m.id) }}"
+                                method="post"
+                                onsubmit="return confirm('Delete module and its assessments?');"
+                                class="mb-3">
+                            <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
+                            </form>
+                        </div> 
+                        
 
                         <!-- Assessments table -->
-                        <div class="table-wrap">
+                        <div class="table-wrap" style="margin-top: 10px;">
                             <table class="applies-table">
                                 <thead>
                                     <tr>
-                                        <th style="min-width:320px">Assessment Title</th>
-                                        <th style="min-width:3160px">Weight</th>
-                                        <th style="min-width:3160px">Score</th>
-                                        <th style="min-width:3140px">Actions</th>
+                                        <th style="min-width:150px;">Assessment Title</th>
+                                        <th style="min-width:80px;">Weight</th>
+                                        <th style="min-width:80px;">Score</th>
+                                        <th style="min-width:150px;">Actions</th>
                                     </tr>
                                 </thead>
 
@@ -132,6 +153,7 @@
                                                     <input class="form-control" name="title" value="{{ a.title }}" required>
                                                 </div>
                                         </td>
+
                                         <td class="align-middle">
                                             <input class="form-control js-weight" type="number" name="weight_pct" value="{{ a.weight_pct }}" min="0" max="100" step="0.5" required>
                                         </td>
@@ -143,12 +165,13 @@
                                         <td class="align-middle">
                                             <div class="row-actions">
                                                 <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
-                                                                               
+                                            </div>                                
                                             </form>
 
                                             <form action="{{ url_for('grades_assessment_delete', assessment_id=a.id) }}" method="post" onsubmit="return confirm('Delete this assessment?')">
-                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
-                                            </div> 
+                                                <div class="row-actions">
+                                                    <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
+                                                </div> 
                                             </form>
                                         </td>
                                     </tr>
@@ -172,8 +195,8 @@
                                         </td>
 
                                         <td class="align-middle">
-                                            <div class="row_actions">
-                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
+                                            <div class="row-actions">
+                                                <button class="btn btn-pill btn-actions" type="submit">Save</button>
                                             </div>
                                             </form>
                                         </td>                                            
