@@ -515,47 +515,58 @@ body.schedule{
 
 /* ============ Grades page tables ============ */
 
-.grades-table th,
-.grades-table td{
-    min-width: auto !important;
-    width: auto;
+.grades-page .table-wrap{
+    overflow-x: visible;
 }
 
-.grades-table input.form-control,
-.grades-table select.form-control,
-.grades-table textarea.form-control{
-    height: auto;
+.grades-page .applies-table{
+    width: 100%;
+    min-width: 0;
+    table-layout: auto;
+}
+
+.grades-page .applies-table th,
+.grades-page .applies-table td{
+    min-width: 0 !important;
+    white-space: nowrap;
+}
+
+/* Modules table */
+.grades-page .grades-table--modules th.col-term,
+.grades-page .grades-table--modules td.col-term{ width: 160px;}
+
+.grades-page .grades-table--modules th.col-credits,
+.grades-page .grades-table--modules td.col-credits{ width: 160px;}
+
+.grades-page .grades-table--modules th.col-actions,
+.grades-page .grades-table--modules td.col-actions{ width: 160px;}
+
+.grades-page .grades-table--modules th.col-title,
+.grades-page .grades-table--modules td.col-title{ width: auto;}
+
+/* Assessments table */
+.grades-page .grades-table--assessments th.col-weight,
+.grades-page .grades-table--assessments td.col-weight{ width: 160px;}
+
+.grades-page .grades-table--assessments th.col-score,
+.grades-page .grades-table--assessments td.col-score{ width: 160px;}
+
+.grades-page .grades-table--assessments th.col-actions,
+.grades-page .grades-table--assessments td.col-actions{ width: 160px;}
+
+.grades-page .grades-table--assessments th.col-title,
+.grades-page .grades-table--assessments td.col-title{ width: auto;}
+
+.grades-page .applies-table .form-control{
+    height: 36px;
     padding: 4px 8px;
-    font-size: 0.9rem;
+    font-size: .9rem;
 }
 
-.grades-table .btn{
+.grades-page .applies-table .btn{
     padding: 4px 10px;
-    font-size: 0.85rem;
+    font-size: .85rem;
 }
-
-.grades-table--modules .col-title {
-    min-width: 100px;
-    max-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.grades-table--modules .col-term { width: 110px; }
-.grades-table--modules .col-credits { width: 110px; }
-.grades-table--modules .col-actions { width: 130px; text-align: center; }
-
-.grades-table--assessments .col-title {
-    min-width: 100px;
-    max-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.grades-table--assessments .col-weight { width: 110px; }
-.grades-table--assessments .col-score { width: 110px; }
-.grades-table--assessments .col-actions { width: 130px; text-align: center; }
-
 
 
 

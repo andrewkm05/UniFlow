@@ -157,58 +157,56 @@
                                 <tbody>
                                     {% for a in assessments_by_module.get(m.id, []) %}
                                     <tr>
+                                        <!-- Title -->                                    
                                         <td class="col-title">
-                                            <form action="{{ url_for('grades_assessment_update', assessment_id=a.id) }}" method="post" class="row g-2 js-assessment">
-                                                <div class="col-12">
-                                                    <input class="form-control" name="title" value="{{ a.title }}" required>
-                                                </div>
+                                            <input class="form-control" name="title" value="{{ a.title }}" required form="ass-upd-{{ a.id }}">
                                         </td>
 
+                                        <!-- Weight -->
                                         <td class="align-middle col-weight">
-                                            <input class="form-control js-weight" type="number" name="weight_pct" value="{{ a.weight_pct }}" min="0" max="100" step="0.5" required>
+                                            <input class="form-control js-weight" type="number" name="weight_pct" value="{{ a.weight_pct }}" min="0" max="100" step="0.5" required form="ass-upd-{{ a.id }}">
                                         </td>
 
+                                        <!-- Score -->
                                         <td class="align-middle col-score">
-                                            <input class="form-control js-score" type="number" name="score" value="{{ a.score if a.score_pct is not none else '' }}" min="0" max="100" step="0.5">
+                                            <input class="form-control js-score" type="number" name="score_pct" value="{{ a.score_pct if a.score_pct is not none else '' }}" min="0" max="100" step="0.5" form="ass-upd-{{ a.id }}">
                                         </td>
 
+                                        <!-- Actions -->
                                         <td class="align-middle col-actions">
+                                            <form action="{{ url_for('grades_assessment_update', assessment_id=a.id) }}" method="post" class="row g-2 js-assessment" id="ass-upd-{{ a.id }}"></form>
+                                            
                                             <div class="row-actions">
-                                                <button class="btn btn-pill btn-outline-secondary" type="submit">Save</button>
-                                            </div>                                
-                                            </form>
+                                                <button class="btn btn-pill btn-actions" type="submit" form="ass-upd-{{ a.id }}">Save</button>
 
-                                            <form action="{{ url_for('grades_assessment_delete', assessment_id=a.id) }}" method="post" onsubmit="return confirm('Delete this assessment?')">
-                                                <div class="row-actions">
-                                                    <button class="btn btn-pill btn-outline-secondary" type="submit">Delete</button>
-                                                </div> 
-                                            </form>
-                                        </td>
+                                                <form action="{{ url_for('grades_assessment_delete', assessment_id=a.id) }}" method="post" onsubmit="return confirm('Delete this assessment?');">
+                                                    <button class="btn btn-pill btn-actions" type="submit">Delete</button>
+                                                </form>
+                                            </div> 
+                                        </td>                                        
                                     </tr>
                                     {% endfor %}
 
                                     <!-- Add assessment -->
                                     <tr class="bg-body-secondary-subtle">
                                         <td>
-                                            <form action="{{ url_for('grades_assessment_create', module_id=m.id) }}" method="post" class="row g-2 js-assessment">
-                                                <div class="col-12">
-                                                    <input class="form-control" name="title" placeholder="Assessment title" required>
-                                                </div>
+                                            <input class="form-control" name="title" placeholder="Assessment title" required form="ass-new-{{ m.id }}">
                                         </td>
 
                                         <td class="align-middle">
-                                            <input class="form-control js-weight" type="number" name="weight_pct" placeholder="e.g. 30" min="0" max="100" step="0.5" required>
+                                            <input class="form-control js-weight" type="number" name="weight_pct" placeholder="e.g. 30" min="0" max="100" step="0.5" required form="ass-new-{{ m.id }}">
                                         </td>
 
                                         <td class="align_middle">
-                                            <input class="form-control js-score" type="number" name="score_pct" placeholder="e.g. 75" min="0" max="100" step="0.5">
+                                            <input class="form-control js-score" type="number" name="score_pct" placeholder="e.g. 75" min="0" max="100" step="0.5" form="ass-new-{{ m.id }}">
                                         </td>
 
                                         <td class="align-middle">
+                                            <form action="{{ url_for('grades_assessment_create', module_id=m.id) }}" method="post" class="row g-2 js-assessment" id="ass-new-{{ m.id }}"></form>
+
                                             <div class="row-actions">
-                                                <button class="btn btn-pill btn-actions" type="submit">Save</button>
+                                                <button class="btn btn-pill btn-actions" type="submit" form="ass-new-{{ m.id }}">Save</button>
                                             </div>
-                                            </form>
                                         </td>                                            
                                     </tr>
                                 </tbody>
