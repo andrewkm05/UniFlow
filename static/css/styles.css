@@ -571,6 +571,19 @@ body.schedule{
 
 
 
+/* ============ Assignments Page ============ */
+
+.badge-due-soon {background: #832b28 !important;}
+.badge-due-mid {background: #6a5a31 !important;}
+.badge-due-ok {background: #56745c !important;}
+
+.assignment-settings .form-control{height: 36px; font-size: .95rem;}
+
+.assignment-body .form-control{height: 36px; font-size: .95rem;}
+
+
+
+
 /* ============ Mobile tweaks ============ */
 @media (max-width: 576px){
     :root{
