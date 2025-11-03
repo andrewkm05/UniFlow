@@ -4,6 +4,193 @@
 
 {% block content %}
 
+<div class="container-xl assignments-page" style="margin-top: 80px;">
 
+    <!-- Header: Title + Add button -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="fw-bold display-6 text-uppercase">ASSIGNMENTS</h1>
+
+        <form action="{{ url_for('assignments_add') }}" method="post" class="mb-0">
+            <div class="d-flex align-items-center gap-2">
+                <button type="submit" class="btn btn-primary-uf rounded-pill px-4">
+                    Add +
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if not assignments %}
+        <div class="alert alert-info">No assignments yet. Click <strong>Add +</strong> to create your first one.</div>
+    {% endif %}
+
+    <div class="d-flex flex-column gap-3">
+        {% for a in assignments %}
+            {% set stages = stages_by_assignment.get(a.id, []) %}
+            {% set ns = namespace(done=0) %}
+
+            {% for s in stages %}
+                {% if s.done %}
+                    {% set ns.done = ns.done + 1 %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="card shadow-sm border-0 assignment" dta-assignment-id="{{ a.id }}">
+                <!-- Header -->
+                <div class="card-header bg-white">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <strong class="fs-5">{{ a.title }}</strong>
+
+                            {% if a.due_date %}
+                                <span class="badge rounded-pill text-bg-secondary js-due-badge">Due: {{ a.due_date }}</span>
+                            {% else %}
+                                <span class="badge rounded-pill text-bg-light text-muted">No due date</span>
+                            {% endif %}
+
+                            <span class="badge rounded-pill
+                                        {% if a.priority == 1%}text-bg-danger
+                                        {% elif a.priority == 2 %}text-bg-warning
+                                        {% else %}text-bg-success{% endif %}">
+                                
+                                        {% if a.priority == 1%}
+                                            Urgent
+                                        {% elif a.priority == 2 %}
+                                            Normal
+                                        {% else %}
+                                            Low
+                                        {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <small class="text-muted">{{ ns.done }}/{{ stages|lenght }} completed</small>
+
+                            <button class="btn btn-pill btn-actions js-toggle-body" type="button">Open</button>
+                            <button class="btn btn-pill btn-actions js-toggle-settings" type="button">Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body: stages + notes -->
+                <div class="assignment-body" hidden>
+                    <div class="card-body">
+
+                        <!-- Stages table -->
+                        <div class="table-wrap mb-3">
+                            <table class="applies-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 60px;">Done</th>
+                                        <th>Stages</th>
+                                        <th style="min-width: 140px;">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for s in stages %}
+                                    <tr>
+                                        <td class="align-midle">
+                                            <form action="{{ url_for('stage_toggle', stage_id=s.id) }}" method="post" class="m-0">
+                                                <input class="form-check-input" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if s.done else '' }}>
+                                            </form>
+                                        </td>
+
+                                        <td class="align-middle">
+                                            {{ s.title }}
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <form action="{{ url_for('stage_delete', tage_id=s.id) }}" method="post" class="mb-0" onsubmit="return confirm('Delete this stage?')">
+                                                <button class="btn btn-pill btn-actions" type="submit">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                    <!-- Add new stage -->
+                                    <tr class="bg-body-secondary-subtle">
+                                        <td class="align-middle">
+                                            <span class="text-muted small">New</span>
+                                        </td>
+
+                                        <td>
+                                            <form action="{{ url_for('stage_add', assignment_id=a.id) }}" method="post" class="row g-2 m-0">
+                                                <div class="col-12">
+                                                    <input class="form-control" name="title" placeholder="Add a stage" required>
+                                                </div>
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <button class="btn btn-pill btn-actions" type="submit">
+                                                Add
+                                            </button>
+                                            </form>
+                                        </td>                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Form for notes -->
+                        <form action="{{ url_for('assignments_notes', assignment_id=a.id) }}" method="post" class="mb-2">
+                            <label class="form-label small mb-1">
+                                Notes
+                            </label>
+                            
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ a.notes or '' }}</textarea>
+
+                            <div class="mt-2">
+                                <button class="btn btn-pill btn-actions" type="submit">
+                                    Save Notes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                 <div class="assignment-settings" hidden>
+                    <div class="card-body border-top">
+                        <form action="{{ url_for('assignments_update', assignment_id=a.id) }}" method="post" class="row g-3 mb-2">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small mb-1">
+                                    Title
+                                </label>
+
+                                <input class="form-control" name="title" value="{{ a.title }}" required>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <label class="form-label small mb-1">
+                                    Due date
+                                </label>
+
+                                <input class="form-control" type="date" name="due_date" value="{{ a.due_date or '' }}">
+                            </div>
+
+                            <div class="col-12 d-flex gap-2">
+                                <button class="btn btn-pill btn-actions" type="submit">
+                                    Save
+                                </button>
+
+                                <form action="{{ url_for('assignments_delete', assignment_id=a.id) }}" method="post" class="m-0" onsubmit="return confirm('Delete this assignment?')">
+                                    <button class="btn btn-pill btn-actions" type="reset">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+
+                        <small class="text-muted">Priority is set automaticaly from due date.</small>
+                    </div>
+                 </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/assignments.js') }}" defer></script>
 
 {% endblock %}
