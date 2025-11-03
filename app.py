@@ -622,10 +622,6 @@ def assignments_add():
 
     priority = auto_priority(due_date)
 
-    if not title:
-        flash("Please enter a valid assignment title", "warning")
-        return redirect(url_for("assignments_page"))
-    
     db.execute(
         "INSERT INTO assignments (user_id, title, due_date, priority, notes, status) VALUES (?, ?, ?, ?, ?, ?)",
         session["user_id"], title, due_date, priority, notes, status
@@ -636,12 +632,12 @@ def assignments_add():
 
 # ------ Update assignment ---------
 @app.route("/assignments/<int:assignment_id>/update", methods=["POST"])
-def assignments_update(assignments_id):
+def assignments_update(assignment_id):
     if "user_id" not in session:
         return redirect(url_for("login"))
     
     row = db.execute (
-        "SELECT user_id FROM assignments WHERE id = ?", assignments_id
+        "SELECT user_id FROM assignments WHERE id = ?", assignment_id
     )
 
     if not row or row[0]["user_id"] != session["user_id"]:
@@ -650,17 +646,18 @@ def assignments_update(assignments_id):
     title = (request.form.get("title") or "").strip()
     due_date = request.form.get("due_date") or None
     notes = (request.form.get("notes") or "").strip()
-    status = (request.form.get("status" or "pending")).strip()
+    status = (request.form.get("status") or "pending").strip()
 
+    # For just saving the notes
     if not title:
-        flash("Please enter a valid assignment title", "warning")
-        return redirect(url_for("assignments_page"))
+        row2 = db.execute("SELECT title FROM assignments WHERE id = ?", assignment_id)
+        title = row2[0]["title"]
     
     priority = auto_priority(due_date)
     
     db.execute (
         "UPDATE assignments SET title = ?, due_date = ?, priority = ?, notes = ?, status = ? WHERE id = ?",
-        title, due_date, priority, notes, status, assignments_id
+        title, due_date, priority, notes, status, assignment_id
     )
 
     flash("Assignment updated", "success")
@@ -725,7 +722,10 @@ def stage_toggle(stage_id):
         return redirect(url_for("login"))
     
     row = db.execute (
-        "SELECT a.user_id FROM assignments_stages s JOIN assignments a ON a.id=s.assignment_id WHERE s.id = ?",
+        "SELECT a.user_id, s.assignment_id AS assignment_id "
+        "FROM assignments_stages s "
+        "JOIN assignments a ON a.id = s.assignment_id "
+        "WHERE s.id = ?",
         stage_id 
     )
 
@@ -746,7 +746,10 @@ def stage_delete(stage_id):
         return redirect(url_for("login"))
     
     row = db.execute (
-        "SELECT a.user_id FROM assignments_stages s JOIN assignments a ON a.id=s.assignment_id WHERE s.id = ?",
+        "SELECT a.user_id, s.assignment_id AS assignment_id "
+        "FROM assignments_stages s "
+        "JOIN assignments a ON a.id = s.assignment_id "
+        "WHERE s.id = ?",
         stage_id 
     )
 
