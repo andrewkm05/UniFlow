@@ -597,7 +597,7 @@ def assignments_page():
         "SELECT id, assignment_id, title, done, position " 
         "FROM assignments_stages "
         "WHERE assignment_id  IN (SELECT id FROM assignments WHERE user_id = ?) " 
-        "ORDER BY aasignment_id, position ASC, id ASC",
+        "ORDER BY assignment_id, position ASC, id ASC",
         user_id
     )
 

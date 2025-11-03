@@ -22,12 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.querySelectorAll(".js-due-badge").forEach(badge => {
-        const m = badge.textContent.match(/\b(\d{4}-\d{2})\b/);
+        const m = badge.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
 
         if(!m)
             return;
 
-        const due = new Date(m[1]);
+        const y = Number(m[1]), mon = Number(m[2]), d = Number(m[3]);
+        const due = new Date(yield, mon - 1, d);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);

@@ -34,7 +34,7 @@
                 {% endif %}
             {% endfor %}
 
-            <div class="card shadow-sm border-0 assignment" dta-assignment-id="{{ a.id }}">
+            <div class="card shadow-sm border-0 assignment" data-assignment-id="{{ a.id }}">
                 <!-- Header -->
                 <div class="card-header bg-white">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
@@ -89,7 +89,7 @@
                                 <tbody>
                                     {% for s in stages %}
                                     <tr>
-                                        <td class="align-midle">
+                                        <td class="align-middle">
                                             <form action="{{ url_for('stage_toggle', stage_id=s.id) }}" method="post" class="m-0">
                                                 <input class="form-check-input" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if s.done else '' }}>
                                             </form>
@@ -115,17 +115,17 @@
                                             <span class="text-muted small">New</span>
                                         </td>
 
-                                        <td>
+                                        <td colspan="2">
                                             <form action="{{ url_for('stage_add', assignment_id=a.id) }}" method="post" class="row g-2 m-0">
-                                                <div class="col-12">
+                                                <div class="col-12 cpl-md">
                                                     <input class="form-control" name="title" placeholder="Add a stage" required>
                                                 </div>
-                                        </td>
 
-                                        <td class="align-middle">
-                                            <button class="btn btn-pill btn-actions" type="submit">
-                                                Add
-                                            </button>
+                                                <div class="col-auto">
+                                                    <button class="btn btn-pill btn-actions" type="submit">
+                                                        Add
+                                                    </button>
+                                                </div>
                                             </form>
                                         </td>                                        
                                     </tr>
@@ -153,6 +153,8 @@
                 <!-- Settings -->
                  <div class="assignment-settings" hidden>
                     <div class="card-body border-top">
+
+                        <!-- Update form -->
                         <form action="{{ url_for('assignments_update', assignment_id=a.id) }}" method="post" class="row g-3 mb-2">
                             <div class="col-12 col-md-6">
                                 <label class="form-label small mb-1">
@@ -174,15 +176,14 @@
                                 <button class="btn btn-pill btn-actions" type="submit">
                                     Save
                                 </button>
-
-                                <form action="{{ url_for('assignments_delete', assignment_id=a.id) }}" method="post" class="m-0" onsubmit="return confirm('Delete this assignment?')">
-                                    <button class="btn btn-pill btn-actions" type="reset">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
                         </form>
 
+                        <form action="{{ url_for('assignments_delete', assignment_id=a.id) }}" method="post" class="m-0" onsubmit="return confirm('Delete this assignment?')">
+                            <button class="btn btn-pill btn-actions" type="submit">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
                         <small class="text-muted">Priority is set automaticaly from due date.</small>
                     </div>
                  </div>
