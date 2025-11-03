@@ -618,7 +618,8 @@ def assignments_add():
     title = (request.form.get("title") or "").strip()
     due_date = request.form.get("due_date") or None
     notes = (request.form.get("notes") or "").strip()
-    status = (request.form.get("status" or "pending")).strip()
+    status = (request.form.get("status") or "pending").strip()
+
     priority = auto_priority(due_date)
 
     if not title:
