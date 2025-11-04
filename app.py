@@ -152,10 +152,10 @@ def schedule_save():
     
     item_id_raw = request.form.get("id", "").strip()
     weekday_raw = request.form.get("weekday", "").strip()
-    start = (request.form.get("start_time") or "").stirp()
-    end = (request.form.get("end_time") or "").stirp()
-    title = (request.form.get("title") or "").stirp()
-    notes = (request.form.get("notes") or "").stirp()
+    start = (request.form.get("start_time") or "").strip()
+    end = (request.form.get("end_time") or "").strip()
+    title = (request.form.get("title") or "").strip()
+    notes = (request.form.get("notes") or "").strip()
 
     # def to check that time is in HH::MM format and valid
     def valid_time(t):
