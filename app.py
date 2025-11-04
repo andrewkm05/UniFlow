@@ -622,13 +622,13 @@ def assignments_add():
 
     priority = auto_priority(due_date)
 
-    db.execute(
+    new_id = db.execute(
         "INSERT INTO assignments (user_id, title, due_date, priority, notes, status) VALUES (?, ?, ?, ?, ?, ?)",
         session["user_id"], title, due_date, priority, notes, status
     )
 
-    flash("Assignment addes", "success")
-    return redirect(url_for("assignments_page"))
+    flash("Assignment created", "success")
+    return redirect(url_for("assignments_page", open=new_id))
 
 # ------ Update assignment ---------
 @app.route("/assignments/<int:assignment_id>/update", methods=["POST"])
@@ -650,8 +650,9 @@ def assignments_update(assignment_id):
 
     # For just saving the notes
     if not title:
-        row2 = db.execute("SELECT title FROM assignments WHERE id = ?", assignment_id)
+        row2 = db.execute("SELECT title, due_date FROM assignments WHERE id = ?", assignment_id)
         title = row2[0]["title"]
+        due_date = row2[0]["due_date"]
     
     priority = auto_priority(due_date)
     

@@ -42,15 +42,15 @@
                             <strong class="fs-5">{{ a.title }}</strong>
 
                             {% if a.due_date %}
-                                <span class="badge rounded-pill text-bg-secondary js-due-badge">Due: {{ a.due_date }}</span>
+                                <span class="badge rounded-pill js-due-badge">Due: {{ a.due_date }}</span>
                             {% else %}
                                 <span class="badge rounded-pill text-bg-light text-muted">No due date</span>
                             {% endif %}
 
                             <span class="badge rounded-pill
-                                        {% if a.priority == 1%}text-bg-danger
-                                        {% elif a.priority == 2 %}text-bg-warning
-                                        {% else %}text-bg-success{% endif %}">
+                                        {% if a.priority == 1%}badge-due-soon
+                                        {% elif a.priority == 2 %}badge-due-mid
+                                        {% else %}badge-due-ok{% endif %}">
                                 
                                         {% if a.priority == 1%}
                                             Urgent
