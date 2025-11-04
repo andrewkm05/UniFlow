@@ -118,9 +118,148 @@ def logout():
     flash("Logged out succesfully.", "info")
     return redirect(url_for("welcome"))
 
-@app.route("/schedule")
-def schedule():
-    return render_template("schedule.html", show_nav=True)
+
+# ================ WEEKLY SCHEDULE ================
+
+# Days helper
+DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+# Main page:
+@app.route("/schedule", methods=["GET"])
+def schedule_page():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    rows = db.execute(
+        "SELECT id, weekday, start_time, end_time, title, notes "
+        "FROM schedule_items WHERE user_id = ? "
+        "ORDER BY weekday ASC, start_time ASC, id ASC",
+        session["user_id"]
+    )
+
+    # group the rows by weekday
+    items_by_day = {i: [] for i in range(7)}
+
+    for r in rows:
+        items_by_day[r["weekday"]].append(r)
+
+    return render_template("schedule.html", show_nav=True, items_by_day=items_by_day, days=DAYS)
+
+@app.route("/schedule/save", methods=["POST"])
+def schedule_save():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    item_id_raw = request.form.get("id", "").strip()
+    weekday_raw = request.form.get("weekday", "").strip()
+    start = (request.form.get("start_time") or "").stirp()
+    end = (request.form.get("end_time") or "").stirp()
+    title = (request.form.get("title") or "").stirp()
+    notes = (request.form.get("notes") or "").stirp()
+
+    # def to check that time is in HH::MM format and valid
+    def valid_time(t):
+        if not t or len(t) != 5 or t[2] != ":":
+            return False
+        
+        hh, mm = t.split(":")
+        return hh.isdigit() and mm.isdigit() and 0 <= int(hh) <= 23 and 0 <= int(mm) <= 59
+
+    # validations:
+    try:
+        weekday = int(weekday_raw)
+    except:
+        weekday = -1
+    
+    if weekday < 0 or weekday > 6:
+        flash("Please select a valid day", "warning")
+        return redirect(url_for("schedule_page"))
+    
+    if not valid_time(start) or not valid_time(end):
+        flash("Please enter valid times", "warning")
+        return redirect(url_for("schedule_page"))
+    
+    if end <= start:
+        flash("End time must be after start time", "warning")
+        return redirect(url_for("schedule_page"))
+    
+    if not title:
+        flash("Please enter a title", "warning")
+        return redirect(url_for("schedule_page"))
+    
+    # update/insert logic stays the same
+    if item_id_raw:
+        try:
+            item_id = int(item_id_raw)
+        except:
+            flash("Invalid item id", "warning")
+            return redirect(url_for("schedule_page"))
+        
+        row = db.execute(
+            "SELECT user_id FROM schedule_items WHERE id = ?", item_id
+        )
+
+        if not row or row[0]["user_id"] != session["user_id"]:
+            abort(403)
+        
+        db.execute(
+            "UPDATE schedule_items "
+            "SET weekday = ?, start_time = ?, end_time = ?, title = ?, notes = ? "
+            "WHERE id = ?",
+            weekday, start, end, title, notes, item_id
+        )
+        flash("Slot updated", "success")
+    
+    else:
+        db.execute(
+            "INSERT INTO schedule_items(user_id, weekday, start_time, end_time, title, notes) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            session["user_id"], weekday, start, end, title, notes
+        )
+        flash("Slot added", "success")
+    
+    return redirect(url_for("schedule_page"))
+
+# Delete a slot on schedule table
+@app.route("/schedule/delete/<int:item_id>", methods=["POST"])
+def schedule_delete(item_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute(
+        "SELECT user_id FROM schedule_items WHERE id = ?", item_id
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    db.execute (
+        "DELETE FROM schedule_items WHERE id = ?", item_id
+    )
+
+    flash("Slot deleted", "success")
+    return redirect(url_for("schedule_page"))
+
+# clear the whole table
+@app.route("/schedule/clear", methods=["POST"])
+def schedule_clear():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    db.execute(
+        "DELETE FROM schedule_items WHERE user_id = ?", session["user_id"]
+    )
+
+    flash("Schedule cleared", "success")
+    return redirect(url_for("schedule_page"))
+
+
+
+
+
+
+
+
 
 # ================ APPLICATIONS ================
 
