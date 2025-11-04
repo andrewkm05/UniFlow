@@ -581,6 +581,39 @@ body.schedule{
 
 .assignment-body .form-control{height: 36px; font-size: .95rem;}
 
+/* Stages table */
+.stages-page .table-wrap{
+    overflow-x: visible;
+}
+
+.stages-page .applies-table{
+    width: 100%;
+    min-width: 0;
+    table-layout: auto;
+}
+
+.stages-page .applies-table th,
+.stages-page .applies-table td{
+    min-width: 0 !important;
+    white-space: nowrap;
+}
+
+.stages-page .stages-table th.col-done,
+.stages-page .stages-table td.col-done{
+    width: 60px;
+    text-align: center;
+}
+
+.stages-page .stages-table th.col-stages,
+.stages-page .stages-table td.col-stages{
+    width: 100px;
+}
+
+.stages-page .stages-table th.col-actions,
+.stages-page .stages-table td.col-actions{
+    width: 120px;
+    text-align: center;
+}
 
 
 

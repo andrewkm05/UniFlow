@@ -76,30 +76,30 @@
                     <div class="card-body">
 
                         <!-- Stages table -->
-                        <div class="table-wrap mb-3">
-                            <table class="applies-table w-100">
+                        <div class="table-wrap stages-page mb-3">
+                            <table class="applies-table stages-table w-100">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 60px;">Done</th>
-                                        <th>Stages</th>
-                                        <th style="min-width: 140px;">Actions</th>
+                                        <th class="col-done">Done</th>
+                                        <th class="col-stages">Stages</th>
+                                        <th class="col-actions">Actions</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     {% for s in stages %}
                                     <tr>
-                                        <td class="align-middle">
+                                        <td class="align-middle col-done">
                                             <form action="{{ url_for('stage_toggle', stage_id=s.id) }}" method="post" class="m-0">
                                                 <input class="form-check-input" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if s.done else '' }}>
                                             </form>
                                         </td>
 
-                                        <td class="align-middle">
+                                        <td class="align-middle col-stages">
                                             {{ s.title }}
                                         </td>
 
-                                        <td class="align-middle">
+                                        <td class="align-middle col-actions">
                                             <form action="{{ url_for('stage_delete', stage_id=s.id) }}" method="post" class="mb-0" onsubmit="return confirm('Delete this stage?')">
                                                 <button class="btn btn-pill btn-actions" type="submit">
                                                     Delete
@@ -111,23 +111,21 @@
 
                                     <!-- Add new stage -->
                                     <tr class="bg-body-secondary-subtle">
-                                        <td class="align-middle">
+                                        <td class="align-middle col-done">
                                             <span class="text-muted small">New</span>
                                         </td>
 
-                                        <td colspan="2">
-                                            <form action="{{ url_for('stage_add', assignment_id=a.id) }}" method="post" class="row g-2 m-0">
-                                                <div class="col-12 cpl-md">
-                                                    <input class="form-control" name="title" placeholder="Add a stage" required>
-                                                </div>
-
-                                                <div class="col-auto">
-                                                    <button class="btn btn-pill btn-actions" type="submit">
-                                                        Add
-                                                    </button>
-                                                </div>
+                                        <td class="align-middle col-stages">
+                                            <form action="{{ url_for('stage_add', assignment_id=a.id) }}" id="stage-new-{{ a.id }}" method="post" class="row g-2 m-0">                                                
+                                                    <input class="form-control" name="title" placeholder="Add a stage" required>                                                
                                             </form>
-                                        </td>                                        
+                                        </td>
+
+                                        <td class="align-middle col-actions">                                            
+                                                <button class="btn btn-pill btn-actions" type="submit" form="stage-new-{{ a.id }}">
+                                                    Add
+                                                </button>                                            
+                                        </td>                                                                                                                     
                                     </tr>
                                 </tbody>
                             </table>
