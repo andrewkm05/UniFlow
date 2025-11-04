@@ -624,18 +624,18 @@ body.schedule{
 
 .stages-page .stages-table th.col-done,
 .stages-page .stages-table td.col-done{
-    width: 60px;
+    width: 80px;
     text-align: center;
 }
 
 .stages-page .stages-table th.col-stages,
 .stages-page .stages-table td.col-stages{
-    width: 100px;
+    width: auto;
 }
 
 .stages-page .stages-table th.col-actions,
 .stages-page .stages-table td.col-actions{
-    width: 120px;
+    width: 180px;
     text-align: center;
 }
 

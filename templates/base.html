@@ -42,16 +42,16 @@
 
                 <div class="collapse navbar-collapse" id="navMain">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link{% if request.endpoint=='home' %} active{% endif %}" href="{{ url_for('applications_page') }}">Applications</a>
-                        </li>
-
                         <li class="nav-item home-text">
                             <a class="nav-link" href="{{ url_for('schedule') }}">Schedule</a>
                         </li>
 
                         <li class="nav-item home-text">
                             <a class="nav-link" href="{{ url_for('assignments_page') }}">Assignments</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link{% if request.endpoint=='home' %} active{% endif %}" href="{{ url_for('applications_page') }}">Applications</a>
                         </li>
 
                         <li class="nav-item home-text">
