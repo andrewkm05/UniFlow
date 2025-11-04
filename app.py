@@ -136,12 +136,14 @@ def schedule_page():
         "ORDER BY weekday ASC, start_time ASC, id ASC",
         session["user_id"]
     )
+    print("SCHEDULE rows for user", session["user_id"], "=>", rows)  # <— ΔΕΣ ΤΟ LOG
 
     # group the rows by weekday
     items_by_day = {i: [] for i in range(7)}
 
     for r in rows:
-        items_by_day[r["weekday"]].append(r)
+        day = int(r["weekday"])
+        items_by_day[day].append(r)
 
     return render_template("schedule.html", show_nav=True, items_by_day=items_by_day, days=DAYS)
 

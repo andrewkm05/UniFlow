@@ -29,7 +29,6 @@
     <div class="table-wrap">
         <!-- Week grid -->
         <div class="row g-3" id="week">
-            {% set days = ["Monday", "Tuesday", "Wednsday", "Thursday", "Friday", "Saturday", "Sunday"] %}
             {% for d in days %}
             <div class="col-12 col-md-6 col-lg-3 col-xl">
                 <div class="card h-100 shadow-sm">
@@ -38,14 +37,35 @@
                         <span class="fw-bold text-uppercase">{{ d }}</span>
 
                         <!-- Add button per day -->
-                        <button class="btn btn-sm rounded-pill px-3" style="color: var(--uf-brown-200);" type="button" data-bs-toggle="modal" data-bs-target="#scheduleModule" data-mode="create" data-weekday="{{ loop.index0 }}">
+                        <button class="btn btn-sm rounded-pill px-3" style="color: var(--uf-brown-200);" type="button" data-bs-toggle="modal" data-bs-target="#scheduleModal" data-mode="create" data-weekday="{{ loop.index0 }}">
                             (+ Add)
                         </button>
                     </div>
 
                     <!-- Day list -->
-                    <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}>
+                    <ul class="list-group list-group-flush day-list" data-day="{{ loop.index0 }}">
+                        {% for it in items_by_day[loop.index0] %}
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">{{ it.title }}</div>
+                                    <div class="small text-muted">{{ it.start_time }}-{{ it.end_time }}</div>
 
+                                    {% if it.notes %}
+                                        <div class="small text-muted">{{ it.notes }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <form action="{{ url_for('schedule_delete', item_id=it.id) }}" method="post" class="ms-3">
+                                    <button class="btn btn-pill btn-actions" title="Delete" onclick="return confirm('Delete this slot?')">
+                                        x
+                                    </button>
+                                </form>
+                            </li>
+                        {% endfor %}
+
+                        {% if not items_by_day[loop.index0] %}
+                            <li class="list-group-item text-muted small">No entries</li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -83,7 +103,7 @@
                             <select class="form-control" name="weekday" id="f-day" required>
                                 <option value="0">Monday</option>
                                 <option value="1">Tuesday</option>
-                                <option value="2">Wednsday</option>
+                                <option value="2">Wednesday</option>
                                 <option value="3">Thursday</option>
                                 <option value="4">Friday</option>
                                 <option value="5">Saturday</option>
