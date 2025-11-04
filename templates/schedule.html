@@ -12,15 +12,17 @@
         <h1 class="fw-bold display-6 text-uppercase">Weekly Schedule</h1>
 
         <div class="d-flex gap-2">
-            <!-- Edit button-->
-            <button id="add-btn" class="btn btn-primary-uf rounded-pill px-4">
-                Edit
+            <!-- Global Add button -->
+            <button class="btn btn-primary-uf rounded-pill px-4" type="button" data-bs-toggle="modal" data-bs-target="#scheduleModal" data-mode="create">
+                Add + 
             </button>
 
             <!-- Clear Table button-->
-            <button id="clear-btn" class="btn btn-outline-uf rounded-pill px-4">
-                Clear
-            </button>
+            <form action="{{ url_for('schedule_clear')}}" method="post" class="mb-0">
+                <button id="clear-btn" class="btn btn-outline-uf rounded-pill px-4" type="submit">
+                    Clear
+                </button>
+            </form>
         </div>
     </div>
     
@@ -32,63 +34,105 @@
             <div class="col-12 col-md-6 col-lg-3 col-xl">
                 <div class="card h-100 shadow-sm">
                     <!-- "Days" headers -->
-                    <div class="card-header fw-bold text-center text-uppercase" style="background-color: var(--uf-brown); color: #fff;">
-                        {{d}}
+                    <div class="card-header fw-bold text-center" style="background-color: var(--uf-brown); color: #fff;">
+                        <span class="fw-bold text-uppercase">{{ d }}</span>
+
+                        <!-- Add button per day -->
+                        <button class="btn btn-sm btn-light rounded-pill px-3" type="button" data-bs-toggle="modal" data-bs-target="#scheduleModule" data-mode="create" data-weekday="{{ loop.index0 }}">
+                            + Add
+                        </button>
                     </div>
 
-                    <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}></ul>
+                    <!-- Day list -->
+                    <ul class="list-group list-group-flush day-list" data-day=""{{ loop.index0 }}>
+
+                    </ul>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+</div>
 
-    <!-- Mini form for editing/adding events (hidden at first place)-->
-    <div id="form-wrap" class="card shadow p-3 mt-4 d-none" style="max-width: 700px;">
-        <h2 class="h5 fw-bold mb-3" style="font-size: 200%; letter-spacing: 2px;">Add task</h2>
+<!-- Add / Edit -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-        <div class="row g-3">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="scheduleModalLabel">
+                    Add slot
+                </h5>
 
-            <div class="col-12 col-md-3">
-
-                <!-- Select day -->
-                <label class="form-label">Day</label>
-                <select id="f-day" class="form-control">
-                    <option value="0">Monday</option>
-                    <option value="1">Tuesday</option>
-                    <option value="2">Wednsday</option>
-                    <option value="3">Thursday</option>
-                    <option value="4">Friday</option>
-                    <option value="5">Saturday</option>    
-                    <option value="6">Sunday</option>
-                </select>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <!-- Hours -->
-            <div class="col-12 col-md-3">
-                <label class="form-label">Start</label>
-                <input type="time" id="f-start" class="form-control" value="14:00" required>
-            </div>
+            <!-- Form for add/edit -->
+            <form id="scheduleForm" action="{{ url_for('schedule_save') }}" method="post">
+                <div class="modal-body">
 
-            <div class="col-12 col-md-3">
-                <label class="form-label">End</label>
-                <input type="time" id="f-end" class="form-control" value="15:20" required>
-            </div>
+                    <input type="hidden" name="id" id="f-id">
 
-            <!-- Title -->
-            <div class="col-12 col-md-3">
-                <label class="form-label">Title</label>
-                <input type="text" id="f-title" class="form-control" placeholder="e.g. Algorithms Lecture" required>
-            </div>
+                    <div class="row g-3">
 
-            <!-- Save Buttons -->
-            <div class="col-12 d-flex gap-2">
-                <button id="save-item" class="btn btn-pill btn-primary-uf">Save</button>
-                <button id="cancel-item" class="btn btn-pill btn-outline-uf">Cancel</button>
-            </div>
+                        <!-- Day -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Day</label>
+
+                            <select class="form-control" name="weekday" id="f-day" required>
+                                <option value="0">Monday</option>
+                                <option value="1">Tuesday</option>
+                                <option value="2">Wednsday</option>
+                                <option value="3">Thursday</option>
+                                <option value="4">Friday</option>
+                                <option value="5">Saturday</option>
+                                <option value="6">Sunday</option>
+                            </select>
+                        </div>
+
+                        <!-- Start time -->
+                        <div class="col-6 col-md-4">
+                            <label class="form-label">Start</label>
+
+                            <input class="form-control" type="time" name="start_time" id="f-start" value="14:00" required>
+                        </div>
+
+                        <!-- End time -->
+                        <div class="col-6 col-md-4">
+                            <label class="form-label">End</label>
+
+                            <input class="form-control" type="time" name="end_time" id="f-end" value="15:00" required>
+                        </div>
+
+                        <!-- Title -->
+                        <div class="col-12">
+                            <label class="forn-label">Title</label>
+
+                            <input class="form-control" type="text" name="title" id="f-title" required>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+
+                            <textarea class="form-control" name="notes" id="f-notes" rows="3"></textarea>
+                        </div>
+                    </div>                    
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-pill btn-actions" type="button" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    
+                    <button class="btn btn-pill btn-actions" type="submit">
+                        Save
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-
 </div>
 
 <script src="{{ url_for('static', filename='js/schedule.js') }}" defer></script>
