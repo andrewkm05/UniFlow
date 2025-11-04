@@ -9,12 +9,30 @@ CREATE TABLE IF NOT EXISTS users(
 
 -- =============== Schedule Page =============== --
 
-CREATE TABLE IF NOT EXISTS schedules(
+CREATE TABLE IF NOT EXISTS schedule_items(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
-    data TEXT NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    weekday INTEGER NOT NULL,
+    start_time TEXT NOT NULL,
+    end_time TEXT NOT NULL,
+    title TEXT NOT NULL,
+    notes TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TRIGGER IF NOT EXISTS trg_schedule_items_touch_updated
+AFTER UPDATE ON schedule_items
+FOR EACH ROW BEGIN
+    UPDATE schedule_items
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
+END;
+
+CREATE INDEX IF NOT EXISTS idx_sched_user_day_time
+ON schedule_items(user_id, weekday, start_time, position);
 
 -- =============== Applications Page =============== --
 
