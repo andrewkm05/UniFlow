@@ -384,6 +384,32 @@ body.schedule{
     background: rgba(225, 225, 225, .25);
 }
 
+.slot{
+    display: grid;
+    grid-template-rows: auto auto auto;
+    row-gap: 4px;
+    min-width: 0;
+}
+
+.slot-title{
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slot-time{
+    font: .9rem;
+    white-space: nowrap;
+}
+
+.slot-actions{
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-direction: row;
+}
+
 /* ============ Applies Page ============ */
 
 .table-wrap{

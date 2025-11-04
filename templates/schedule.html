@@ -26,12 +26,12 @@
         </div>
     </div>
     
-    <div class="table-wrap">
+    <div class="table-wrap week-scroll">
         <!-- Week grid -->
-        <div class="row g-3" id="week">
+        <div class="row week-row g-3" id="week">
             {% for d in days %}
-            <div class="col-12 col-md-6 col-lg-3 col-xl">
-                <div class="card h-100 shadow-sm">
+            <div class="week-day col-12 col-md-6 col-lg-3 col-xl">
+                <div class="card week-card h-100 shadow-sm">
                     <!-- "Days" headers -->
                     <div class="card-header fw-bold text-center" style="background-color: var(--uf-brown); color: #fff;">
                         <span class="fw-bold text-uppercase">{{ d }}</span>
@@ -45,27 +45,26 @@
                     <!-- Day list -->
                     <ul class="list-group list-group-flush day-list" data-day="{{ loop.index0 }}">
                         {% for it in items_by_day[loop.index0] %}
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                <div>
-                                    <div class="fw-semibold">{{ it.title }}</div>
-                                    <div class="small text-muted">{{ it.start_time }}-{{ it.end_time }}</div>
+                            <li class="list-group-item slot">
+                                <div class="slot-title fw-semibold text-truncate">{{ it.title }}</div>
+                                <div class="slot-time small text-muted">{{ it.start_time }}-{{ it.end_time }}</div>
 
-                                    {% if it.notes %}
-                                        <div class="small text-muted">{{ it.notes }}</div>
-                                    {% endif %}
+                                <div class="slot-actions d-flex align-items-center justify-content-start ms-2">                                    
+                                    <form action="{{ url_for('schedule_delete', item_id=it.id) }}" method="post" class="ms-3">
+                                        <button class="slot-delete btn" title="Delete" onclick="return confirm('Delete this slot?')">
+                                            ×
+                                        </button>
+                                    </form>
+
+                                    <!-- Edit button -->
+                                    <a class="slot-edit btn" data-bs-toggle="modal" data-bs-target="#scheduleModal" data-mode="edit" data-id="{{ it.id }}" data-weekday="{{ it.weekday }}" data-start="{{ it.start_time }}" data-end="{{ it.end_time }}" data-title="{{ it.title }}" data-notes="{{ it.notes|default('') }}">
+                                        ⌞ ⌝
+                                    </a>
                                 </div>
-
-                                <form action="{{ url_for('schedule_delete', item_id=it.id) }}" method="post" class="ms-3">
-                                    <button class="btn btn-pill btn-actions" title="Delete" onclick="return confirm('Delete this slot?')">
-                                        x
-                                    </button>
-                                </form>
+                                
                             </li>
                         {% endfor %}
 
-                        {% if not items_by_day[loop.index0] %}
-                            <li class="list-group-item text-muted small">No entries</li>
-                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -81,7 +80,7 @@
 
             <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="scheduleModalLabel">
+                <h5 class="modal-title fw-bold" id="scheduleModalLabel" style="font-family: Bagel Fat One">
                     Add slot
                 </h5>
 
