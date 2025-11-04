@@ -54,6 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.show();
         });
     });
-    
 
+    // Slot sizes change dynamicaly with the start-end time
+    document.querySelectorAll('.slot').forEach(li => {
+        const s = li.getAttribute('data-start');
+        const e = li.getAttribute('data-end');
+
+        if(!s || !e)
+            return;
+
+        const [sh, sm] = s.split(':').map(Number);
+        const [eh, em] = e.split(':').map(Number);
+
+        const startMin = sh*60 + sm;
+        const endMin = eh*60 + em;
+
+        let diffMin = Math.max(0, endMin - startMin);
+
+        const spanHours = Math.max(1, diffMin / 60);
+
+        li.style.setProperty('--slot-span', spanHours);
+    });
 });

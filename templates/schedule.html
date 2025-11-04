@@ -45,9 +45,11 @@
                     <!-- Day list -->
                     <ul class="list-group list-group-flush day-list" data-day="{{ loop.index0 }}">
                         {% for it in items_by_day[loop.index0] %}
-                            <li class="list-group-item slot">
-                                <div class="slot-title fw-semibold text-truncate">{{ it.title }}</div>
-                                <div class="slot-time small text-muted">{{ it.start_time }}-{{ it.end_time }}</div>
+                            <li class="list-group-item slot" style="--slot-span: 2" data-start="{{ it.start_time }}" data-end="{{ it.end_time }}">
+                                <div class="slot-main">
+                                    <div class="slot-title fw-semibold text-truncate">{{ it.title }}</div>
+                                    <div class="slot-time small text-muted">{{ it.start_time }}-{{ it.end_time }}</div>
+                                </div>
 
                                 <div class="slot-actions d-flex align-items-center justify-content-start ms-2">                                    
                                     <form action="{{ url_for('schedule_delete', item_id=it.id) }}" method="post" class="ms-3">
