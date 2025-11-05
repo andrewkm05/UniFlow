@@ -38,6 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(bodyBtn)
                 bodyBtn.textContent = "Close"
+            
+            if(setBtn){
+                setBtn.disabled = true;
+                setBtn.classList.add("opacity-50 cursor-not-allowed");
+            }
 
             settings.hidden = true;
         }
@@ -46,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const open = body.hidden === false;
             body.hidden = open;
             bodyBtn.textContent = open ? "Open" : "Close";
+
+            if(setBtn){
+                const disableEdit = !open;
+                setBtn.disabled = disableEdit;
+                setBtn.classList.toggle("opacity-50", disableEdit);
+                setBtn.classList.toggle("cursor-not-allowed", disableEdit);
+                setBtn.title = disableEdit ? "Close the body to enable editing" : "";
+            }
+
             if(!open){
                 settings.hidden = true;
 
