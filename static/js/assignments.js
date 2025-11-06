@@ -41,7 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if(setBtn){
                 setBtn.disabled = true;
-                setBtn.classList.add("opacity-50 cursor-not-allowed");
+                setBtn.classList.add("opacity-50");
+                setBtn.classList.add("cursor-not-allowed");
             }
 
             settings.hidden = true;

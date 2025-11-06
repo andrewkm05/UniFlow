@@ -149,7 +149,7 @@
                 </div>
 
                 <!-- Settings -->
-                 <div class="assignment-settings" hidden>
+                <div class="assignment-settings" hidden>
                     <div class="card-body border-top">
 
                         <!-- Update form -->
@@ -174,6 +174,7 @@
                                 <button class="btn btn-pill btn-actions" type="submit">
                                     Save
                                 </button>
+                            </div>
                         </form>
 
                         <form action="{{ url_for('assignments_delete', assignment_id=a.id) }}" method="post" class="m-0" onsubmit="return confirm('Delete this assignment?')">
@@ -182,9 +183,7 @@
                             </button>
                         </form>
                     </div>
-                        <small class="text-muted">Priority is set automaticaly from due date.</small>
-                    </div>
-                 </div>
+                </div>
             </div>
         {% endfor %}
     </div>
