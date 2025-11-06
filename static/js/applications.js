@@ -20,7 +20,7 @@ function paintDeadlines(scope = document) {
 
         if(diffDays < 0) {
             inp.classList.add("deadline-passed");
-            inp.title = `Closed ${Maths.abs(diffDays)} day(s) ago`;
+            inp.title = `Closed ${Math.abs(diffDays)} day(s) ago`;
         }
 
         else if(diffDays <= 5) {
