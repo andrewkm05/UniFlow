@@ -10,7 +10,7 @@
 
             <h1 class="fw-bold display-6 text-uppercase">GRADES</h1>
 
-            <span class="badge rounded-pill text-bg-secondary" style="font-size:.95rem; padding:.5rem .8rem;">
+            <span class="badge rounded-pill btn-primary-uf" style="font-size:.95rem; padding:.5rem .8rem;">
                 Overall: {{ overall_avg if overall_avg is not none else '-' }}%
             </span>
         </div>
@@ -42,7 +42,7 @@
 
                     <!-- Add module in the term -->
                     <form action="{{ url_for('grades_module_add') }}?term={{ term }}" method="post" class="m-0" onclick="event.stopPropagation()">
-                        <button type="submit" class="btn btn-primary-uf rounded-pill px-4">
+                        <button type="submit" class="btn btn-actions rounded-pill">
                             Add +
                         </button>
                     </form>
@@ -80,7 +80,7 @@
 
                                 <!-- Toggle for module SETTINGS (collapsed by default) -->
                                 <div class="d-flex justify-content-end mb-2">
-                                    <button class="btn btn-sm btn-outline-secondary"
+                                    <button class="btn btn-actions rounded-pill" style="width: 150px;"
                                             type="button"
                                             data-bs-toggle="collapse"
                                             data-bs-target="#mod-settings-{{ m.id }}"
@@ -101,7 +101,7 @@
                                                 <tr>
                                                     <th class="col-title">Module Name</th>
                                                     <th class="col-term">Term</th>
-                                                    <th class="col-credits">Credits</th>
+                                                    <th class="col-credits">CATS</th>
                                                     <th class="col-actions">Actions</th>
                                                 </tr>
                                             </thead>
@@ -256,7 +256,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <strong class="text-truncate">{{ c.name }}</strong>
 
-                                    <span class="badge rounded-pill text-bg-secondary">
+                                    <span class="badge rounded-pill btn-primary-uf">
                                         {{ c.overall is not none and (c.overall|string + '%') or '' }}
                                     </span>
                                 </div>
