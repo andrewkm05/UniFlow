@@ -625,6 +625,98 @@ body.schedule{
     font-size: .85rem;
 }
 
+/* For the TERMS cards */
+.grades-page .term-card{
+    border: 0;
+    background: transparent;
+}
+
+.grades-page .term-header{
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 1.0rem 1.25rem;
+    border: 1px solid #f0ebe3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.grades-page .term-header:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .10);
+}
+
+.grades-page .term-header[aria-expanded="true"]{
+    background: #fffdf9;
+}
+
+.grades-page .term-body{
+    padding: 0.75rem 0.25rem 0 0.25rem;
+}
+
+/* Module wrapper */
+
+.grades-page .module.card{
+    border-radius: 1.2rem;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .2s ease;
+    overflow: hidden;
+    border: 1px solid #f0ebe3;
+}
+
+.grades-page .module.card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .10);
+}
+
+/* Module header toggle button */
+.grades-page .module .module-toggle{
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 1.0rem 1.25rem;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid #f6efe6;
+}
+
+/* Title and badges in header*/
+.grades-page .module .module-toggle .fs-5{
+    font-weight: 800;
+    color: var(--uf-brown);
+}
+
+.grades-page .module .badge{
+    border-radius: 999px;
+    font-weight: 800;
+}
+
+/* Across Terms cards*/
+.grades-page .across-terms .card{
+    background: #fff;
+    border: 1px solid #efe7db;
+    border-radius: 24px;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, .06);
+    overflow: hidden;
+}
+
+.grades-page .across-terms .card-body{
+    position: relative;
+    padding: 1.25rem 1.35rem;
+}
+
+.grades-page .across-terms .card strong{
+    font-weight: 800;
+    color: var(--text);
+}
+
+.grades-page .across-terms .card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 24px 44px rgba(0, 0, 0, .08);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+
 
 
 /* ============ Assignments Page ============ */

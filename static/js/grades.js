@@ -116,4 +116,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
         recompute();
     });
+
+    // Auto-open module/settings when redirected with ?open=<id>
+    const params = new URLSearchParams(location.search);
+    const openId = params.get("open")
+
+    if(openId){
+        const mod = document.querySelector(`.module[data-module-id="${openId}"]`);
+
+        if (mod){
+            // Opening term
+            const termCard = mod.closest(".term");
+            const termId = String(termCard?.dataset.term || "");
+            const termHeader = termCard?.querySelector(".term-header");
+            const termBody = termCard?.querySelector(".term-body");
+
+            if (termBody && termBody.hidden){
+                termBody.hidden = false;
+                termHeader?.setAttribute("aria-expanded", "true");
+                openTerms.add(termId);
+                saveSet(OPEN__TERMS_KEY, openTerms);
+            }
+
+            // Opening the module
+            const btn = mod.querySelector(".module-toggle");
+            const body = mod.querySelector(".module-body");
+
+            if(body && body.hidden) {
+                body.hidden = false;
+                btn?.setAttribute("aria-expanded", "true");
+                openModules.add(String(openId));
+                saveSet(OPEN_MODULES_KEY, openModules);
+            }
+
+            // Opening Settings
+            const settings = mod.querySelector(`#mod-settings-${openId}`);
+
+            if(settings && !settings.classList.contains("show")){
+                settings.classList.add("show");
+            }
+
+            // Scroll to module
+            const anchor = document.getElementById(`module-${openId}`) || mod;
+            anchor.scrollIntoView({behavior: "smooth", block: "start"});
+
+            history.replaceState({}, "", location.pathname)
+        }
+    }
+
+    // Reopen last module after any reload
+    if(!openId){
+        const last = sessionStorage.getItem("uniflow_last_module");
+        if(last){
+            const mod = document.querySelector(`.module[data-module-id="${last}"]`)
+
+            if(mod){
+                // Opening term
+                const termCard = mod.closest(".term");
+                const termId = String(termCard?.dataset.term || "");
+                const termHeader = termCard?.querySelector(".term-header");
+                const termBody = termCard?.querySelector(".term-body");
+
+                if (termBody && termBody.hidden){
+                    termBody.hidden = false;
+                    termHeader?.setAttribute("aria-expanded", "true");
+                    openTerms.add(termId);
+                    saveSet(OPEN__TERMS_KEY, openTerms);
+                }
+
+                // Opening the module
+                const btn = mod.querySelector(".module-toggle");
+                const body = mod.querySelector(".module-body");
+
+                if(body && body.hidden) {
+                    body.hidden = false;
+                    btn?.setAttribute("aria-expanded", "true");
+                    openModules.add(String(openId));
+                    saveSet(OPEN_MODULES_KEY, openModules);
+                }
+
+                mod.scrollIntoView({behavior: "smooth", block: "start"});
+            }
+
+            sessionStorage.removeItem("uniflow_last_module");
+        }
+    }
+
+    document.addEventListener("submit", e => {
+        const mod = e.target.closest(".module");
+
+        if(mod){
+            sessionStorage.setItem("uniflow_last_module", mod.dataset.moduleId);
+        }
+    });
 });

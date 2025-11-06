@@ -528,13 +528,13 @@ def grades_module_add():
     
     term = request.args.get("term", type=int) or 1
 
-    db.execute(
+    new_id = db.execute(
         "INSERT INTO modules (user_id, name, term, credits) VALUES (?, ?, ?, ?)",
         session["user_id"], "New Module", term, 5.0
     )
 
     flash("Module created.", "success")
-    return redirect(url_for("grades_page"))
+    return redirect(url_for("grades_page", open=new_id))
 
 @app.route("/grades/module/create", methods=["POST"])
 def grades_module_create():

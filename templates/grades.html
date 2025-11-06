@@ -30,7 +30,7 @@
     <div class="d-flex flex-column gap-3">
 
         {% for term, mods in modules_by_term|dictsort %}
-            <div class="term card shadow-sm border-0" data-term="{{ term }}">
+            <div class="term card shadow-sm border-0" style="border-radius: 1.2rem;" data-term="{{ term }}">
 
                 <!-- Term header - toggle-->
                 <div class="card-header term-header d-flex align-items-center justify-content-between" role="button" aria-expanded="false" aria-controls="term-body-{{ term }}">
@@ -55,7 +55,7 @@
                         {% for m in mods %}
 
                         <!-- Module card -->
-                        <div class="module card border-0 shadow-sm" data-module-id="{{ m.id }}">
+                        <div class="module card border-0 shadow-sm"  data-module-id="{{ m.id }}" id="module-{{ m.id }}">
 
                             <!-- Module header (toggle) -->
                             <button type="button" class="module-toggle btn w-100 text-start p-3" aria-expanded="false" aria-controls="module-body-{{ m.id }}"
@@ -239,14 +239,14 @@
 
     <!-- Across Terms (overall per course grade)-->
     {% if courses_overall %}
-        <div class="mt-4">
+        <div class="mt-5">
             <div class="d-flex align-items-center justify-content-between mb-2">
 
                 <!-- Title -->
                 <h5 class="text-uppercase mb-0">Across Terms</h5>
             </div>
 
-            <div class="row g-3">
+            <div class="row g-3 across-terms">
                 {% for c in courses_overall %}
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         <div class="card shadow-sm border-0 h-100">
