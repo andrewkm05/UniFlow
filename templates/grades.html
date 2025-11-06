@@ -38,13 +38,6 @@
 
                         <h5 class="mb-0"> Term {{ term }}</h5>
 
-                        <span class="badge rounded-pill text-bg-secondary">
-                            Avg: {{ term_summaries[term].avg if term_summaries[term].avg is not none else '-' }}%
-                        </span>
-
-                        <span class="badge rounded-pill text-bg-light text-muted">
-                            Credits: {{ term_summaries[term].credits }}%
-                        </span>
                     </div>
 
                     <!-- Add module in the term -->
@@ -73,14 +66,11 @@
 
                                         <strong class="fs-5">{{ m.name }}</strong>
 
-                                        <span class="badge text-bg-light text-muted">ECTS {{ m.credits }}</span>
+                                        <span class="badge text-bg-light text-muted">CATS {{ m.credits }}</span>
                                     </div>
 
                                     <div class="d-flex align-items-center gap-3">
-                                        <small class="text-muted">Total weight: <span class="mod-total-weight">{{ m.total_weight }}</span>%</small>
-                                        <span class="badge rounded-pill text-bg-secondary mod-grade">
-                                            {{ m.current_grade if m.current_grade is not none else '-' }}%
-                                        </span>
+                                        <small class="text-muted">Total weight(%): <span class="mod-total-weight">{{ m.total_weight }}</span>%</small>                                        
                                     </div>
                                 </div>
                             </button>
@@ -111,17 +101,19 @@
                                                 <tr>
                                                     <th class="col-title">Module Name</th>
                                                     <th class="col-term">Term</th>
-                                                    <th class="col-credits">Cedits</th>
+                                                    <th class="col-credits">Credits</th>
                                                     <th class="col-actions">Actions</th>
                                                 </tr>
                                             </thead>
 
                                             <tbody>
                                                 <tr>
+                                                    <!--Name-->
                                                     <td class="col-title">
                                                         <input class="form-control" name="name" value="{{ m.name }}" required form="upd-{{ m.id }}">
                                                     </td>
 
+                                                    <!-- Term -->
                                                     <td class="align-middle col-term">
                                                         <select class="form-control" name="term" required form="upd-{{ m.id }}">
                                                             {% for t in range(1,13) %}
@@ -130,10 +122,12 @@
                                                         </select>
                                                     </td>
 
+                                                    <!-- Credits -->
                                                     <td class="align-middle col-credits">
                                                         <input class="form-control" type="number" name="credits" min="0.5" step="0.5" value="{{ m.credits }}" required form="upd-{{ m.id }}">
                                                     </td>
 
+                                                    <!-- Actions -->
                                                     <td class="align-middle col-actions">
                                                         <div class="d-flex flex-column gap-2">
                                                             <button class="btn btn-pill btn-actions" type="submit" form="upd-{{ m.id }}">
@@ -158,7 +152,7 @@
                                         <thead>
                                             <tr>
                                                 <th class="col-title">Assessment Title</th>
-                                                <th class="col-weight">Weight</th>
+                                                <th class="col-weight">Weight(%)</th>
                                                 <th class="col-score">Score</th>
                                                 <th class="col-actions">Actions</th>
                                             </tr>
@@ -211,7 +205,7 @@
                                                     <input class="form-control js-weight" type="number" name="weight_pct" placeholder="e.g. 30" min="0" max="100" step="0.5" required form="ass-new-{{ m.id }}">
                                                 </td>
 
-                                                <td class="align_middle">
+                                                <td class="align-middle">
                                                     <input class="form-control js-score" type="number" name="score_pct" placeholder="e.g. 75" min="0" max="100" step="0.5" form="ass-new-{{ m.id }}">
                                                 </td>
 
@@ -231,7 +225,7 @@
 
                                 <!-- Summary row -->
                                 <div class="d-flex justify-content-between small text-muted px-1 pt-2">
-                                    <span>Total weight (live): <strong class="mod-weight-live">-</strong>%</span>
+                                    <span>Total weight(%) (live): <strong class="mod-weight-live">-</strong>%</span>
                                     <span>Module grade (preview): <strong class="mod-grade-live">-</strong>%</span>
                                 </div>                        
                             </div>
@@ -242,6 +236,53 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- Across Terms (overall per course grade)-->
+    {% if courses_overall %}
+        <div class="mt-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+
+                <!-- Title -->
+                <h5 class="text-uppercase mb-0">Across Terms</h5>
+            </div>
+
+            <div class="row g-3">
+                {% for c in courses_overall %}
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex flex-column gap-2">
+
+                                <!-- Course title and overall grade -->
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <strong class="text-truncate">{{ c.name }}</strong>
+
+                                    <span class="badge rounded-pill text-bg-secondary">
+                                        {{ c.overall is not none and (c.overall|string + '%') or '' }}
+                                    </span>
+                                </div>
+
+                                <!-- Terms and CATS -->
+                                <div class="small text-muted">
+                                    {{ c.terms_count }} term{{ 1 if c.terms_count == 1 else 's' }} ({{ c.ects_total / c.terms_count }} CATS)
+                                </div>
+
+                                {% if c.per_terms %}
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for pt in c.per_terms %}
+                                            <span class="badge text-bg-light">
+                                                Term {{ pt.term }}:
+                                                <strong>{{ pt.grade is not none and (pt.grade|string +'%') or '-' }}</strong>
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 
 <script src="{{ url_for('static', filename='js/grades.js') }}" defer></script>

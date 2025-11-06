@@ -257,12 +257,6 @@ def schedule_clear():
 
 
 
-
-
-
-
-
-
 # ================ APPLICATIONS ================
 
 STATUS_CHOICES = [
@@ -389,22 +383,19 @@ def applications_delete(app_id):
 
 def _calc_module_stats(module_id: int):
 
-
-    # It will return the total_weight, current_grade or None for a given module
-
+    # it calculates the weight of the assessments and the grade
     rows = db.execute(
         "SELECT weight_pct, score_pct FROM assessments WHERE module_id = ?",
         module_id
     )
 
     if not rows:
-        return (0.0, None)
-
-    # total_weight: sum of all weight_pct for the module
+        return (0.0, None, 0.0, 0.0)
+    
     total_weight = sum((r["weight_pct"] or 0) for r in rows)
-
-    w_sum = 0.0     # sum of weights that have a valid score
-    ws_sum = 0.0    # sum of weight * score
+    
+    w_sum = 0.0
+    ws_sum = 0.0
 
     for r in rows:
         w = float(r["weight_pct"] or 0)
@@ -413,10 +404,11 @@ def _calc_module_stats(module_id: int):
         if s is not None:
             w_sum += w
             ws_sum += w * s
-    
-    # current: weighted average using only the assessments that have a non null score_pct (if no scores exists ==> return None)
-    current = round(ws_sum / w_sum, 2) if w_sum > 0 else None
-    return (round(total_weight, 2), current)
+        
+    current_grade = round(ws_sum / w_sum, 2) if w_sum > 0 else None
+    current_points = round(ws_sum / 100.0, 2)
+        
+    return (round(total_weight, 2), current_grade, round(w_sum, 2), current_points)
 
 
 @app.route("/grades", methods=["GET"])
@@ -424,12 +416,13 @@ def grades_page():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
+    # Load modules
     modules = db.execute(
         "SELECT id, name, term, credits FROM modules WHERE user_id = ? ORDER BY term, name",
         session["user_id"]
     )
 
-    # organizing the assessments per module and then modules per term
+    # building assessments_by_module and modules_by_term
     assessments_by_module = {}
     modules_by_term = {}
 
@@ -441,20 +434,19 @@ def grades_page():
         )
         assessments_by_module[m["id"]] = arows
         
-        # computing stats for module
-        total_w, cur_grade = _calc_module_stats(m["id"])
+        # computing per-module stats
+        total_w, cur_grade, w_with_score, cur_points = _calc_module_stats(m["id"])
 
         m["total_weight"] = total_w
         m["current_grade"] = cur_grade
+        m["w_with_score"] = w_with_score
+        m["current_points"] = cur_points
 
         term = int(m["term"])
         modules_by_term.setdefault(term, []).append(m)
     
-    # summarising per team (credits-weighted avergae) and the overall average
+    # ---- Term summaries (credits-weighted) ----
     term_summaries = {}
-    overall_credits = 0.0
-    overall_weighted = 0.0
-
     for term, mods in modules_by_term.items():
         t_credits = 0.0
         t_weighted = 0.0
@@ -462,28 +454,70 @@ def grades_page():
         for m in mods:
             c = float(m["credits"])
             t_credits += c
-
-            # only includes the modules that currently have a grade
             if m["current_grade"] is not None:
                 t_weighted += c * float(m["current_grade"])
-        
+
         t_avg = round(t_weighted / t_credits, 2) if t_credits > 0 else None
-
         term_summaries[term] = {
-            "credit s": round(t_credits, 2),
-            "avg": t_avg
+            "credits": round(t_credits, 2),
+            "avg": t_avg,
         }
-
-        overall_credits += t_credits
-        overall_weighted += t_weighted
     
-    overall_avg = round(overall_weighted / overall_credits, 2) if overall_credits > 0 else None
+    # Build courses map
+    courses_map = {}
+
+    for term, mods in modules_by_term.items():
+        for m in mods:
+            cname = (m.get("name") or "").strip()
+            if not cname:
+                continue
+
+            credits = float(m.get("credits") or 0.0)
+            points = float(m.get("current_points") or 0.0)
+
+            agg = courses_map.setdefault(cname, {
+                
+                "name": cname, 
+                "ects_total" : 0.0,
+                "terms": {},            # term -> {"credits": float, "pairs": [(grade, credits), ...]}
+            })
+
+            agg["ects_total"] += credits
+
+            tentry = agg["terms"].setdefault(term, {"points": 0.0})
+            tentry["points"] += points
+
+    # collapse for templates and overall
+    courses_overall = []
+    for cname, agg in courses_map.items():
+        per_terms = []
+        overall_points = 0.0
+
+        for t in sorted(agg["terms"].keys()):
+            pts = round(agg["terms"][t]["points"], 2)
+            per_terms.append({"term": t, "grade": pts})
+            overall_points += pts
+
+        courses_overall.append({
+            "name": agg["name"],
+            "overall": round(overall_points, 2),
+            "ects_total": int(agg["ects_total"]) if agg["ects_total"].is_integer() else round(agg["ects_total"], 1),
+            "terms_count": len(agg["terms"]),
+            "per_terms": per_terms,
+        })
+
+    courses_overall.sort(key=lambda x: x["name"].lower())
+
+    vals = [c["overall"] for c in courses_overall if isinstance(c.get("overall"), (int, float))]
+    overall_avg = round(sum(vals) / len(vals), 2) if vals else None
+
 
     return render_template("grades.html", show_nav=True,
                            modules_by_term = modules_by_term,
                            assessments_by_module = assessments_by_module,
                            term_summaries = term_summaries,
-                           overall_avg = overall_avg)
+                           overall_avg = overall_avg, 
+                           courses_overall=courses_overall)
 
 # -------- Modules: create / update / delete ----------
 
