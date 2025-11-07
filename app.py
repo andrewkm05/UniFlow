@@ -106,11 +106,83 @@ def login():
     return render_template("login.html", show_nav=False)
 
 @app.route("/home")
-def home():
+def home_page():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
-    return render_template("home.html", show_nav=True, username=session.get("username"))
+    uid = session["user_id"]
+
+    # Assignments: only those with due in next 7 days (excluding done)
+    assignments_due = db.execute (
+        "SELECT COUNT(*) AS c FROM assignments "
+        "WHERE user_id = ? "
+        "AND due_date IS NOT NULL "
+        "AND DATE(due_date) >= DATE('now') "
+        "AND DATE(due_date) <= DATE('now', '+7 day') "
+        "AND status <> 'done'",
+        uid
+    )[0]["c"]
+
+    # Applications: the count of only the active ones (not rejected/not interested ones)
+    apps_active = db.execute (
+        "SELECT COUNT(*) AS c FROM applications "
+        "WHERE user_id = ? "
+        "AND status NOT IN ('Rejected', 'Not Interested')",
+        uid
+    )[0]["c"]
+
+    # Next application closing date
+    next_closing = db.execute (
+        "SELECT MIN(close_date) AS d FROM applications "
+        "WHERE user_id = ?  AND close_date IS NOT NULL "
+        "AND DATE(close_date) >= DATE('now')",
+        uid
+    )[0]["c"]
+
+    # Overall grade
+    mods = db.execute(
+        "SELECT id, credits FROM modules WHERE user_id = ?",
+        uid
+    )
+
+    total_c = 0.0
+    acc = 0.0
+
+    for m in mods:
+        rows = db.execute(
+            "SELECT wheight_pct, score_pct FROM assessments WHERE module_id = ?", m["id"]
+        )
+
+        if not rows:
+            continue
+
+        w_sum = 0.0
+        ws = 0.0
+
+        for r in rows:
+            w = float(r["weight_pct"] or 0)
+            s = r["score_pct"]
+
+            if s is not None:
+                w_sum += w
+                ws += w * s
+            
+        if w_sum > 0:
+            grade = ws / w_sum
+            c = float(m["credits"] or 0.0)
+            acc += grade * c
+            total_c += c
+    
+    overall_grade = round(acc / total_c, 2) if total_c > 0 else None
+
+    overview = {
+        "assignments_due_7d": assignments_due,
+        "apps_active": apps_active,
+        "next_closing": next_closing,
+        "overall_grade": overall_grade
+    }
+    
+    return render_template("home.html", show_nav=True, username=session.get("username"), overview=overview)
 
 @app.route("/logout")
 def logout():
