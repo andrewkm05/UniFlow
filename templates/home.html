@@ -8,17 +8,68 @@ return render_template("home.html", show_nav=True)
 -->
 
 {% block content %}
-<main class="container py-5 my-5 text-center">
-    
-    <h1 class="logo mb-3">
-        Welcome to UniFlow
-    </h1>
+<div class="container-xl home-main" style="padding-top: 80px;">
 
-    <p class="lead">
-        This is your student hub. Plan, track and... flow!
-    </p>
+    <div class="text-center mb-4">
+        <h1 class="logo mb-3" style="font-size: clamp(60px, 12vw, 110px)">
+            Welcome to UniFlow
+        </h1>
 
-    <!-- Sections -->
-</main>
+        <p class="lead" style="margin-top: 60px;">
+            This is your student hub. Plan, track and... flow!
+        </p>
+    </div>
+
+    <!-- Quick Overview -->
+    <div class="overview-grid">
+
+        <!-- Assignments -->
+        <div class="ov-card">
+            <div class="ov-title">
+                Assignments (next 7 days)
+            </div>
+
+            <div class="ov-value">
+                {{ overview.assignments_due_7d }}
+            </div>
+        </div>
+
+        <!-- Active Applications -->
+        <div class="ov-card">
+            <div class="ov-title">
+                Active Applications
+            </div>
+
+            <div class="ov-value">
+                {{ overview.apps_active }}
+            </div>
+        </div>
+
+        <!-- Next closing application -->
+        <div class="ov-card">
+            <div class="ov-title">
+                Next Closing Application
+            </div>
+
+            <div class="ov-value">
+                {{ overview.next_closing or '-' }}
+            </div>
+        </div>
+
+        <!-- Active Applications -->
+        <div class="ov-card">
+            <div class="ov-title">
+                Overall Grade
+            </div>
+
+            <div class="ov-value">
+                {{ overview.overall_grade is not none and (overview.overall_grade|string + '%') or '-' }}
+            </div>
+        </div>
+    </div>
+
+    <!--  -->
+</div>
+
 
 {% endblock %}

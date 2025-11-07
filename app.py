@@ -137,7 +137,7 @@ def home_page():
         "WHERE user_id = ?  AND close_date IS NOT NULL "
         "AND DATE(close_date) >= DATE('now')",
         uid
-    )[0]["c"]
+    )[0]["d"]
 
     # Overall grade
     mods = db.execute(
@@ -150,7 +150,7 @@ def home_page():
 
     for m in mods:
         rows = db.execute(
-            "SELECT wheight_pct, score_pct FROM assessments WHERE module_id = ?", m["id"]
+            "SELECT weight_pct, score_pct FROM assessments WHERE module_id = ?", m["id"]
         )
 
         if not rows:

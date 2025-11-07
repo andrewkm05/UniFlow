@@ -262,6 +262,37 @@ body{
     text-align: center;
 }
 
+.overview-grid{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 14px;
+    width: min(1100px, 92vw);
+    margin-inline: auto;
+    margin-bottom: 18px;
+}
+
+.ov-card{
+    background: #fff;
+    border: 1px solid #f0ebe3;
+    border-radius: 20px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .06);
+}
+
+.ov-title{
+    font-weight: 800;
+    color: var(--uf-brown);
+    font-size: 1rem;
+    letter-spacing: .2px;
+    margin-bottom: 6px;
+}
+
+.ov-value{
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--uf-brown-600);
+}
+
 /* ============ Weekly Schedule ============ */
 
 :root{
