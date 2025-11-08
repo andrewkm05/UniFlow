@@ -106,7 +106,7 @@ def login():
     return render_template("login.html", show_nav=False)
 
 @app.route("/home")
-def home_page():
+def home():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
