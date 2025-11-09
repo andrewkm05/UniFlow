@@ -55,24 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Slot sizes change dynamicaly with the start-end time
-    document.querySelectorAll('.slot').forEach(li => {
-        const s = li.getAttribute('data-start');
-        const e = li.getAttribute('data-end');
+    // Slot placement on grid based on start/end time
+    (function placeSlot() {
+        const SLOT_MIN = 30;
+        const START_MIN = 480;  // 08:00
+        const END_MIN = 1320;   // 22:00
 
-        if(!s || !e)
-            return;
+        function toMins(hhmm){
+            const [h, m] = hhmm.split(':').map(Number);
+            return h*60 + m;
+        }
 
-        const [sh, sm] = s.split(':').map(Number);
-        const [eh, em] = e.split(':').map(Number);
+        document.querySelectorAll('.day-list .slot').forEach(li => {
+            const s = li.getAttribute('data-start');
+            const e = li.getAttribute('data-end');
 
-        const startMin = sh*60 + sm;
-        const endMin = eh*60 + em;
+            if(!s || !e)
+                return;
 
-        let diffMin = Math.max(0, endMin - startMin);
+            let start = toMins(s);
+            let end = toMins(e);
 
-        const spanHours = Math.max(1, diffMin / 60);
+            start = Math.max(start, START_MIN);
+            end = Math.min(end, END_MIN);
 
-        li.style.setProperty('--slot-span', spanHours);
-    });
+            if(end <= start)
+                return;
+
+            const rowStart = Math.floor((start - START_MIN) / SLOT_MIN) + 1;
+            const rowEnd = Math.ceil((end - START_MIN) / SLOT_MIN) + 1;
+
+            li.style.gridRow = `${rowStart} / ${rowEnd}`;
+        });
+    })();
+    
 });
