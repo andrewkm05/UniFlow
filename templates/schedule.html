@@ -18,7 +18,7 @@
             </button>
 
             <!-- Clear Table button-->
-            <form action="{{ url_for('schedule_clear')}}" method="post" class="mb-0">
+            <form action="{{ url_for('schedule_clear')}}" method="post" class="mb-0" onsubmit="return confirm('Clear the whole table?')"">
                 <button id="clear-btn" class="btn btn-outline-uf rounded-pill px-4" type="submit">
                     Clear
                 </button>
