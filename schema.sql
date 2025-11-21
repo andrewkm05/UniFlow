@@ -1,3 +1,8 @@
+-- schema.sql
+-- Main database schema for UniFlow application
+-- Defines tables, indexes, and triggers for users, schedule, applications, grade tracker, and assignments
+-- Used ChatGPT only to learn and refine trigger patterns and index choices (wrote all code myself)
+
 -- =============== users Page =============== --
 
 CREATE TABLE IF NOT EXISTS users(
