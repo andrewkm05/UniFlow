@@ -1,5 +1,5 @@
 // Paint application deadlines with appropriate classes based on how soon they are or if they have passed.
-// Used ChatGPT to learng new techniques for date handling in JS.
+// Used ChatGPT to learng some improved patterns for date handling in JS (the implementation is my own)
 function paintDeadlines(scope = document) {
 
     const today = new Date();
@@ -32,7 +32,7 @@ function paintDeadlines(scope = document) {
     });
 }
 
-// animations for alerts that auto-dismiss using opacity and translate transitions
+// Animations for alerts that auto-dismiss using opacity and translate transitions
 function autoDismissAlerts(delayMs = 2500) {
     const alerts = document.querySelectorAll(".alert");
 
@@ -51,13 +51,13 @@ function autoDismissAlerts(delayMs = 2500) {
     });
 }
 
-// autosize textareas to fit content
+// Autosize textareas to fit content
 function autosizeTextarea(el) {
     el.style.height = "auto";
     el.style.height = Math.max(46, el.scrollHeight) + "px";
 }
 
-// wire up all textareas in the given scope to autosize on input
+// Wire up all textareas in the given scope to autosize on input
 function wireTextareaAutosize(scope = document) {
     scope.querySelectorAll("textarea").forEach((ta) => {
         autosizeTextarea(ta);
@@ -67,7 +67,7 @@ function wireTextareaAutosize(scope = document) {
 
 // Main DOMContentLoaded event 
 // Wire up add row button, paint deadlines, auto-dismiss alerts, and wire textarea autosize
-// used ChatGPT to learn about DOMContentLoaded event handling
+// used ChatGPT to explore better DOM event patterns (implementation is my own)
 document.addEventListener("DOMContentLoaded", () => {
 
     const addBtn = document.getElementById("addRowBtn");
