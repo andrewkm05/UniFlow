@@ -1,4 +1,4 @@
-// To keep assignments form open after any action until the user closes them
+// Store/restore the open assignment panels across page reloads using sessionStorage
 const OPEN_ASSIGNMENTS_KEY = "uniflow_assignments_open";
 
 function loadOpen() {
@@ -14,16 +14,19 @@ function saveOpen(set) {
     sessionStorage.setItem(OPEN_ASSIGNMENTS_KEY, JSON.stringify([...set]));
 }
 
+// Auto-resize a textarea to fit its content
 function autoResizeTextarea(t) {
     t.style.height = "auto";
     t.style.height = (t.scrollHeight || t.offsetHeight) + "px";
 }
 
-
+// Main DOMContentLoaded handler. Sets up all assignment cards UI behavior
+// Used ChatGPT specifically to improve structure of DOM event handling around toggling panels/learned about requestAnimationFrame (implementation is my own)
 document.addEventListener("DOMContentLoaded", () => {
 
     const openSet = loadOpen();
 
+    // Toggle open/close logic for each assignment card
     document.querySelectorAll(".assignment").forEach(card => {
         const id = card.dataset.assignmentId;
 
@@ -32,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const body = card.querySelector(".assignment-body");
         const settings = card.querySelector(".assignment-settings");
 
-        // reopen if it was open before refresh
+        // Restore previously open state
         if(id && openSet.has(id)) {
             body.hidden = false;
 
@@ -48,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             settings.hidden = true;
         }
 
+        // Open/Close the body panel
         bodyBtn?.addEventListener("click", () => {
             const open = body.hidden === false;
             body.hidden = open;
@@ -61,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setBtn.title = disableEdit ? "Close the body to enable editing" : "";
             }
 
+            // When opening, auto-resize all textareas and hide settings 
             if(!open){
                 settings.hidden = true;
 
@@ -76,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
             saveOpen(openSet);
         });
 
+        // Toggle the settings panel
         setBtn?.addEventListener("click", () => {
             const open = settings.hidden === false;
             settings.hidden = open;
@@ -94,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Highlight due-dates based on how soon they are
     document.querySelectorAll(".js-due-badge").forEach(badge => {
         const m = badge.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
 
@@ -119,8 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             badge.classList.add("badge-due-ok");
     });
 
-    // Auto-expand notes textarea:
-
+    // Auto-resize textareas
     document.querySelectorAll(".assignments-page textarea").forEach(t => {
         t.style.overflow = "hidden";
         t.style.resize = "none";
@@ -131,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 autoResizeTextarea(t);
     });
 
-    // auto open settings when creating a new assignment
+    // Auto-open settings panel if "open" param is in URL
     const params = new URLSearchParams(location.search);
     const openId = params.get("open");
 
