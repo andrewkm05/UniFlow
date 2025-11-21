@@ -1,7 +1,9 @@
+// Keys used to persist open/closed state in sessionStorage
+// Used ChatGPT mainly to refine the pattern of storing sets and restoring UI state (implementation is my own)
 const OPEN__TERMS_KEY = "uniflow_grades__terms_open";
 const OPEN_MODULES_KEY = "uniflow_grades_modules_open"
 
-
+// Load a Set of strings from sessionStorage safely
 function loadSet(key) {
     try{
         return new Set(JSON.parse(sessionStorage.getItem(key) || "[]"));
@@ -11,6 +13,7 @@ function loadSet(key) {
     }
 }
 
+// Save a Set to sessionStorage
 function saveSet(key, set) {
     sessionStorage.setItem(key, JSON.stringify([...set]));
 }
@@ -19,18 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const openTerms = loadSet(OPEN__TERMS_KEY);
     const openModules = loadSet(OPEN_MODULES_KEY);
 
-    // Terms toggle
+    // TERM TOGGLE LOGIC
+    // Restores open state and toggles when header is clicked
     document.querySelectorAll(".term").forEach(termCard => {
         const termId = String(termCard.dataset.term);
         const header = termCard.querySelector(".term-header");
         const body = termCard.querySelector(".term-body");
 
-        //restore
+        // Restore expanded state
         if(openTerms.has(termId)){
             body.hidden = false;
             header.setAttribute("aria-expanded", "true");
         }
 
+        // Toggle term on clicking
         header?.addEventListener("click", () => {
             const nowOpen = body.hidden;
             body.hidden = !nowOpen;
@@ -46,18 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Module toggle and live preview
-
+    // MODULE TOGGLE LOGIC + LIVE WEIGHT/GRADE CALCULATION
     document.querySelectorAll(".module").forEach(mod => {
         const modId = String(mod.dataset.moduleId);
         const btn = mod.querySelector(".module-toggle");
         const body = mod.querySelector(".module-body");
 
+        // Restore expanded modules
         if(openModules.has(modId)) {
             body.hidden = false;
             btn.setAttribute("aria-expanded", "true");
         }
 
+        // Toggle module open/close
         btn?.addEventListener("click", () => {
             const isOpen = body.hidden === false;
             body.hidden = isOpen;
@@ -72,12 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
            saveSet(OPEN_MODULES_KEY, openModules);
         });
 
-        // Live total and grade
-
+        // Live weight and grade calculation
+        // Used ChatGPT to explore cleaner patterns for dynamic calculations (implementation is my own)
         const liveWeight = mod.querySelector(".mod-weight-live");
         const liveGrade = mod.querySelector(".mod-grade-live");
         
         function recompute() {
+
+            // Compute total weight
             let totalW = 0;
 
             mod.querySelectorAll(".js-weight").forEach(i => totalW += parseFloat(i.value || 0));
@@ -87,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(liveWeight)
                 liveWeight.textContent = twTxt;
 
+            // Weighted score
             let ws = 0, wWithScore = 0;
 
             mod.querySelectorAll("tr").forEach(tr => {   
@@ -110,14 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 liveGrade.textContent = gradeText;    
         }
 
+        // Recompute grade on every weight/score input change
         mod.querySelectorAll(".js-weight, .js-score").forEach(inp => {
             inp.addEventListener("input", recompute);
         });
 
+        // Initial computation
         recompute();
     });
 
-    // Auto-open module/settings when redirected with ?open=<id>
+    // Auto-open module and settings panel if "open" param is in URL
     const params = new URLSearchParams(location.search);
     const openId = params.get("open")
 
@@ -125,7 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const mod = document.querySelector(`.module[data-module-id="${openId}"]`);
 
         if (mod){
-            // Opening term
+
+            // Ensure parent term is open
             const termCard = mod.closest(".term");
             const termId = String(termCard?.dataset.term || "");
             const termHeader = termCard?.querySelector(".term-header");
@@ -138,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveSet(OPEN__TERMS_KEY, openTerms);
             }
 
-            // Opening the module
+            // Ensure module is open
             const btn = mod.querySelector(".module-toggle");
             const body = mod.querySelector(".module-body");
 
@@ -149,14 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveSet(OPEN_MODULES_KEY, openModules);
             }
 
-            // Opening Settings
+            // Auto-open settings panel
             const settings = mod.querySelector(`#mod-settings-${openId}`);
 
             if(settings && !settings.classList.contains("show")){
                 settings.classList.add("show");
             }
 
-            // Scroll to module
+            // Scroll into view
             const anchor = document.getElementById(`module-${openId}`) || mod;
             anchor.scrollIntoView({behavior: "smooth", block: "start"});
 
@@ -164,14 +176,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Reopen last module after any reload
+    // Restore last opened module on form submits/navigations
     if(!openId){
         const last = sessionStorage.getItem("uniflow_last_module");
         if(last){
             const mod = document.querySelector(`.module[data-module-id="${last}"]`)
 
             if(mod){
-                // Opening term
                 const termCard = mod.closest(".term");
                 const termId = String(termCard?.dataset.term || "");
                 const termHeader = termCard?.querySelector(".term-header");
@@ -184,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     saveSet(OPEN__TERMS_KEY, openTerms);
                 }
 
-                // Opening the module
                 const btn = mod.querySelector(".module-toggle");
                 const body = mod.querySelector(".module-body");
 
@@ -202,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Remember last module that was edited (so after submission we can restore it)
     document.addEventListener("submit", e => {
         const mod = e.target.closest(".module");
 
