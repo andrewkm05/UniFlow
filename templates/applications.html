@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+<!-- Used ChatGPT only for guidance on Bootstrap layout structure -->
 {% block title %}Applications ~ UniFlow{% endblock %}
 
 {% block content %}
@@ -13,7 +14,7 @@
             Add +
         </button>
     </div>
-
+    
     <!-- Table card -->
     <div class="table-card">
         <div class="card-body p-0">
@@ -40,6 +41,7 @@
                     <tbody id="appsBody">
 
                         {# --------------- CREATE ROW (POST /applications/add) ---------------#}
+                        <!-- This creates new application entry row, initially hidden -->
                         <tbody id="createRow" style="display: none;">
                             <tr>
                                 <form method="post" action="{{ url_for('applications_add') }}">
