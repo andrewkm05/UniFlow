@@ -4,17 +4,21 @@
 {% block content %}
 <div class="container-xl grades-page" style="margin-top: 80px;">
 
-    <!-- Header: Title + Overall + Add-->
+    <!--
+        Header: Title + Add Module button
+    -->
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="d-flex align-items-baseline gap-3">
 
             <h1 class="fw-bold display-6 text-uppercase">GRADES</h1>
 
+            <!-- Overall wheighted average badge (or '-'' if no modules) -->
             <span class="badge rounded-pill btn-primary-uf" style="font-size:.95rem; padding:.5rem .8rem;">
                 Overall: {{ overall_avg if overall_avg is not none else '-' }}%
             </span>
         </div>
 
+        <!-- Add Module button (form POST -> grades_module_add) -->
         <form action="{{ url_for('grades_module_add' )}}" method="post" class="m-0">
             <button type="submit" class="btn btn-primary-uf rounded-pill px-4">
                 Add Module +
@@ -23,16 +27,22 @@
     </div>
 
     {% if not modules_by_term %}
+        <!-- No modules message -->
         <div class="alert alert-info">No modules yet. Click <strong>Add Module +</strong> to get started</div>
     {% endif %}
 
-    <!-- Terms cards -->
+    <!--
+        Main content: Modules grouped by term
+        Each term is a collapsible card containing its modules
+    -->
     <div class="d-flex flex-column gap-3">
 
         {% for term, mods in modules_by_term|dictsort %}
+
+            <!-- Card per term collapsible header -->
             <div class="term card shadow-sm border-0" style="border-radius: 1.2rem;" data-term="{{ term }}">
 
-                <!-- Term header - toggle-->
+                <!-- Term header (toggle) -->
                 <div class="card-header term-header d-flex align-items-center justify-content-between" role="button" aria-expanded="false" aria-controls="term-body-{{ term }}">
                     <div class="d-flex align-items-center gap-3">
 
@@ -48,19 +58,26 @@
                     </form>
                 </div>
 
-                <!-- Term body (hidden at first place) -->
+                <!-- 
+                    Term body (hidden at first place)
+                    Contains modules for the term
+                -->
                 <div class="term-body p-3" id="term-body-{{ term }}" hidden>
                     <div class="d-flex flex-column gap-2">
 
                         {% for m in mods %}
 
-                        <!-- Module card -->
+                        <!-- 
+                            Module card: Each module has its own card with header and body
+                            The structure and styling was inspired by various grade tracking UIs found online, but the implementation is my own
+                        -->
                         <div class="module card border-0 shadow-sm"  data-module-id="{{ m.id }}" id="module-{{ m.id }}">
 
                             <!-- Module header (toggle) -->
                             <button type="button" class="module-toggle btn w-100 text-start p-3" aria-expanded="false" aria-controls="module-body-{{ m.id }}"
                                     style="background: #fff; border:none;">
-                            
+
+                                <!-- Module summary row -->
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center gap-3">
 
@@ -75,7 +92,10 @@
                                 </div>
                             </button>
 
-                            <!-- Module's body (hidden at first place) -->
+                            <!-- 
+                                Module's body (hidden at first place)
+                                Contains module settings and assessments table                            
+                            -->
                             <div class="module-body pt-3 pt-0" id="module-body-{{ m.id }}" hidden>
 
                                 <!-- Toggle for module SETTINGS (collapsed by default) -->
@@ -95,6 +115,7 @@
                                     <!-- Update form -->
                                     <form action="{{ url_for('grades_module_update', module_id=m.id) }}" method="post" class="row g-2 mb-2" id="upd-{{ m.id }}"></form>
 
+                                    <!-- Settings table -->
                                     <div class="table-wrap module-settings mb-3">
                                         <table class="applies-table grades-table grades-table--modules">
                                             <thead>
@@ -159,6 +180,8 @@
                                         </thead>
 
                                         <tbody>
+
+                                            <!-- Existing assessments -->
                                             {% for a in assessments_by_module.get(m.id, []) %}
                                             <tr>
                                                 <!-- Title -->                                    
@@ -223,7 +246,7 @@
                                     </table>
                                 </div>
 
-                                <!-- Summary row -->
+                                <!-- Live preview summary -->
                                 <div class="d-flex justify-content-between small text-muted px-1 pt-2">
                                     <span>Total weight(%) (live): <strong class="mod-weight-live">-</strong>%</span>
                                     <span>Module grade (preview): <strong class="mod-grade-live">-</strong>%</span>
@@ -267,6 +290,8 @@
                                 </div>
 
                                 {% if c.per_terms %}
+
+                                    <!-- Per-term grades -->
                                     <div class="d-flex flex-wrap gap-2">
                                         {% for pt in c.per_terms %}
                                             <span class="badge text-bg-light">
