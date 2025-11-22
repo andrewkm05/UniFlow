@@ -6,7 +6,11 @@
 
 <div class="container py-5" style="margin-top: 40px;">
 
-    <!-- Header row: Title and Actions-->
+    <!-- 
+        Header row: Title and Actions
+        Responsive layout with Bootstrap
+        Used ChatGPT to learn about button data attributes for modal interaction (implementation is my own)
+    -->
     
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <h1 class="fw-bold display-6 text-uppercase">Weekly Schedule</h1>
@@ -26,6 +30,11 @@
         </div>
     </div>
     
+    <!--
+        Schedule table wrapper with horizontal scroll for smaller screens
+        Week grid with Bootstrap responsive columns
+        The structure and styling was inspired by various calendar/schedule UIs found online, but the implementation is my own
+    -->
     <div class="table-wrap week-scroll">
         <!-- Week grid -->
         <div class="row week-row g-3" id="week">
@@ -42,7 +51,10 @@
                         </button>
                     </div>
 
-                    <!-- Day list -->
+                    <!-- 
+                        Day list: Each day has its own list of scheduled items
+                        Each item has data attributes for start/end time for JS calculations so that we can position them correctly in the schedule
+                    -->
                     <ul class="list-group list-group-flush day-list" data-day="{{ loop.index0 }}">
                         {% for it in items_by_day[loop.index0] %}
                             <li class="list-group-item slot" style="--slot-span: 2" data-start="{{ it.start_time }}" data-end="{{ it.end_time }}">
@@ -58,7 +70,10 @@
                                         </button>
                                     </form>
 
-                                    <!-- Edit button -->
+                                    <!-- 
+                                        Edit button: Opens the modal with pre-filled data
+                                        Used data attributes to pass the existing slot data to the modal (handled in schedule.js)
+                                    -->
                                     <a class="slot-edit btn" data-bs-toggle="modal" data-bs-target="#scheduleModal" data-mode="edit" data-id="{{ it.id }}" data-weekday="{{ it.weekday }}" data-start="{{ it.start_time }}" data-end="{{ it.end_time }}" data-title="{{ it.title }}" data-notes="{{ it.notes|default('') }}">
                                         ⌞ ⌝
                                     </a>
@@ -75,7 +90,10 @@
     </div>
 </div>
 
-<!-- Add / Edit -->
+<!--
+    Modal for adding/editing schedule slots
+    Used Bootstrap modal structure and data attributes for dynamic content population
+-->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
