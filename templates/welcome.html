@@ -3,14 +3,22 @@
 
 {% block content %}
 
+<!-- 
+    Welcome / Landing Page for UniFlow
+    Provides Sign Up and Log In options
+    Uses Bootstrap for styling and layout and custom CSS classes
+-->
 <section class="container d-flex flex-column justify-content-center align-items-center text-center min-vh-100 hero-inner">
 
+    <!-- Main logo / app name -->
     <h1 class="display-1 fw-bold mb-2 logo">UniFlow</h1>
 
+    <!-- Short tagline -->
     <div class="tagline mb-5">
         WHERE UNI CHAOS MEETS THE FLOW
     </div>
     
+    <!-- Action buttons: Sign Up and Log In -->
     <div class="d-flex flex-column gap-4 action-stack" style="max-width: 320px; width: 100%;">
         <a class="btn btn-lg rounded-pill btn-pill btn-primary-uf" href="{{ url_for('signup') }}">
             Sign Up
