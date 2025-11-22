@@ -11,7 +11,13 @@
             {% block title %}UniFlow{% endblock %}
         </title>
 
-        <!-- Google Fonts -->
+        <!--
+            Base template for UniFlow
+            Contains the common HTML structure, navbar, and includes for CSS/JS
+            Other templates will extend this base template and fill in the content block
+        -->
+
+        <!-- Google Fonts (Bagel Fat One) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet">
@@ -27,19 +33,23 @@
     <body>
 
         <!--
-        If the page passes show_nav=True, the navbar will be visible. 
-        In welcome / signup / login I WANT it NOT to be visible (show_nav=False).
+            NavBar: Visible on all pages except welcome, login, signup
+            Uses Bootstrap navbar component with custom classes for UniFlow styling
         -->
 
         {% if show_nav %}
         <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top uf-navbar nav-t">
             <div class="container-fluid">
+
+                <!-- Brand / Home link -->
                 <a class="navbar-brand fw-bold nav-text" href="{{ url_for('home') }}">UniFlow</a>
 
+                <!-- Collapse button for mobile view -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Collapsible nav links -->
                 <div class="collapse navbar-collapse" id="navMain">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item home-text">
@@ -67,11 +77,18 @@
         </nav>
         {% endif %}
 
-        <!-- The content of each page will be entered here -->
+        <!-- 
+            Main content block: To be filled by child templates
+            Each page will provide its own content within this block
+        -->
 
         {% block content %}{% endblock %}
 
-        <!-- For the alerts (FLASH MESSAGES as TOASTS (bottom-rigth)) -->
+        <!-- 
+            Toasts area for flash messages
+            Uses Bootstrap toast component for displaying messages
+            Used ChatGPT to learn how to compine Flask flash messages with Bootstrap toasts and mapping categories (implementation is my own)
+        -->
         <div id="toastArea" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
             {% with msgs = get_flashed_messages(with_categories=True) %}
                 {% if msgs %}
@@ -86,6 +103,7 @@
                             <div class="d-flex">
                                 <div class="toast-body">{{ msg }}</div>
 
+                                <!-- Close button -->
                                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                         </div>
@@ -94,7 +112,10 @@
             {% endwith %}
         </div>
 
-        <!-- Turn on all the existing toasts in DOM -->
+        <!-- 
+            Inline script to auto-show toasts on page load
+            It waits for DOMContentLoaded event, then creates and shows Bootstrap Toast instances for each toast in the toast area
+        -->
          <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const area = document.getElementById('toastArea');
@@ -108,7 +129,11 @@
             });
          </script>
 
-        <!-- Alerts close automaticaly: -->
+        <!-- 
+            Second inline script to auto-dismiss alerts after 1.5 seconds
+            Waits for DOMContentLoaded event, then selects all alerts and sets a timeout to close
+            Used ChatGPT to learn how to auto-dismiss Bootstrap alerts with JS (implementation is my own) 
+        -->
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 const alerts = document.querySelectorAll('.alert')
