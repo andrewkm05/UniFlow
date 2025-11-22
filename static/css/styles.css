@@ -1,18 +1,22 @@
-/* ============ TOKENS ============ */
+/* 
+    Tokens and Root variables
+    All colors, sizes, shadows, etc are defined here
+    They are used throughout the CSS for consistency
+*/
 
 :root {
-    --bg: #ebe8e3; /* Page background color */
+    --bg: #ebe8e3;  /* Page background color */
     --uf-brown: #5d4404; /* Main color */
-    --uf-brown-dark: #433103;
-    --uf-brown-200: #f2eadb;
-    --uf-brown-600: #524012;
-    --text: #403518;
+    --uf-brown-dark: #433103;   /* Darker shade for hover states */
+    --uf-brown-200: #f2eadb;    /* Lighter shade for table rows */
+    --uf-brown-600: #524012;    /* Medium shade for emphasis text */
+    --text: #403518;    /* Primary text color */
 
-    --nav-h: 64px;
-    --radius-xl: 24px;
-    --radius-xxl: 32px;
-    --shadow-strong: 0 26px 50px rgba(0, 0, 0, .18);
-    --shadow-soft: 0 10px 25px rgba(0, 0, 0, .12);
+    --nav-h: 64px;  /* Navbar height */
+    --radius-xl: 24px;  /* Border radius large */
+    --radius-xxl: 32px; /* Border radius extra large */
+    --shadow-strong: 0 26px 50px rgba(0, 0, 0, .18);    /* Strong shadow for cards */
+    --shadow-soft: 0 10px 25px rgba(0, 0, 0, .12);  /* Soft shadow for buttons */
 }
 
 /* ============ Base / Reset ============ */
@@ -29,6 +33,7 @@ html, body{
     padding: 0 !important;
 }
 
+/* Global body styles */
 body{
     background-color: var(--bg);
     color: var(--text);
@@ -42,7 +47,7 @@ body{
     color: var(--uf-brown);
 }
 
-/* ============ Alerts: ============ */
+/* ============ Alerts: (Bootstrap with custom CSS) ============ */
 .alert{
     border-radius: 14px;
     font-weight: 500;
@@ -54,6 +59,7 @@ body{
     margin-top: 10px;
 }
 
+/* Custom background colors */
 .alert-success{
     background-color: #56745c;
 }
@@ -70,6 +76,7 @@ body{
     background-color:#62827f;
 }
 
+/* Close button refinement */
 .alert .btn-close{
     filter: invert(1);
     opacity: 0.8;
@@ -84,6 +91,7 @@ body{
 }
 
 /* ============ Toast refinement ============ */
+/* Toasts are used for brief notifications (bottom-right) */
 .toast{
     padding: 0.3rem 0.8rem;
     font-size: 0.9rem;
@@ -106,6 +114,7 @@ body{
 
 /* ============ Welcome (without navbar) ============ */
 
+/* Flex container centering the hero content */
 .hero-inner{
     display: flex;
     flex-direction: column;
@@ -124,6 +133,7 @@ body{
     margin-bottom: .5rem;
 }
 
+/* Tagline below logo */
 .tagline{
     display: inline-block;
     margin-top: clamp(4px, .6vw, 10px);
@@ -138,7 +148,7 @@ body{
     text-shadow: 3px 3px 0 #fff, 6px 6px 0 #d8d8d8;
 }
 
-/* Buttons: */
+/* ========== Buttons: ========== */
 .btn-pill{
     display: inline-block;
     text-decoration: none;
@@ -208,7 +218,7 @@ body{
     padding: 16px;
 }
 
-/* "soft paper" card style */
+/* card style */
 .uf-card{
     background: #fff;
     border: 0;
@@ -218,12 +228,13 @@ body{
     position: relative;
 }
 
-/* labels / inputs */
+/* labels + inputs */
 .form-label{
     font-weight: 800;
     color: var(--uf-brown);
 }
 
+/* Input fields */
 .form-control{
     border-radius: 12px;
     border: 2px solid #d6d6d6;
@@ -233,7 +244,7 @@ body{
 
 .form-control:focus{
     border-color: var(--uf-brown);
-    box-shadow: 0 0 0 .2rem rgba(64,53,24);
+    box-shadow: 0 0 0 .2rem rgba(64,53,24, 0.4);
 }
 
 .submit-cta{
@@ -254,7 +265,8 @@ body{
     box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
 }
 
-.home-main{ /* to leave space for the fixed navbar*/
+/* Offset main content to leave space for fixed navbar */
+.home-main{
     padding-top: var(--nav-h);
     min-height: calc(100dvh - var(--nav-h));
     display: grid;
@@ -262,6 +274,7 @@ body{
     text-align: center;
 }
 
+/* Overview grid of 4 cards */
 .overview-grid{
     display: grid;
     grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -271,6 +284,7 @@ body{
     margin-bottom: 18px;
 }
 
+/* Overview cards */
 .ov-card{
     background: #fff;
     border: 1px solid #f0ebe3;
@@ -288,6 +302,7 @@ body{
     will-change: transform;
 }
 
+/* Title and value inside overview cards */
 .ov-title{
     font-weight: 800;
     color: var(--uf-brown);
@@ -302,6 +317,7 @@ body{
     color: var(--uf-brown-600);
 }
 
+/* Hover effect for overview cards */
 @media(hover: hover){
     .ov-card:hover{
         transform: translateY(-4px) scale(1.02);
@@ -310,6 +326,7 @@ body{
     }
 }
 
+/* Focus effect for overview cards */
 .ov-card:focus-within,
 .ov-card:focus-visible{
     outline: 3px solid rgba(93, 68, 4, 0.35);
@@ -317,6 +334,7 @@ body{
     transform: translateY(-2px);
 }
 
+/* Disable animations for reduced motion preference */
 @media(prefers-reduced-motion: reduce){
     .ov-card{transition: none;}
     .ov-card:hover{transform: none;}
@@ -329,10 +347,11 @@ body{
     --start-min: 480;   /* minutes from midnight = 08:00 */
     --end-min: 1320;    /* 22:00 = 22*60 */
     --rows: calc((var(--end-min) - var(--start-min)) / var(--slot-min));
-    --slot-h: 50px;
+    --slot-h: 50px;     /* height of each slot */
     --grid-gap: 10px;
 }
 
+/* Schedule page body */
 body.schedule{
     background: var(--bg);
     padding-top: var(--nav-h, 64px);
@@ -377,6 +396,7 @@ body.schedule{
     z-index: 2;
 }
 
+/* Bckground grid lines for day columns */
 .day-col::before{
     content: "";
     position: absolute;
@@ -393,6 +413,7 @@ body.schedule{
     pointer-events: none;
 }
 
+/* List of slots inside each day column */
 .day-list{
     display: grid;
     grid-template-rows: repeat(var(--rows), var(--slot-h));
@@ -402,6 +423,7 @@ body.schedule{
     position: relative;
 }
 
+/* Background grid lines for day slot list */
 .day-list::before{
     content: "";
     position: absolute;
@@ -417,10 +439,12 @@ body.schedule{
     pointer-events: none;
 }
 
+/* Top border for first slot in each day */
 .day-list .slot:first-child{
     border-top: 1.5px solid var(--uf-brown-dark) !important;
 }
 
+/* Editing mode styles */
 .week-grid.is-editing .day-col{
     cursor: cell;
 }
@@ -430,6 +454,7 @@ body.schedule{
     outline-offset: 2px;
 }
 
+/* Event cards inside slots */
 .event{
     align-self: stretch;
     margin: 2px 6px;
@@ -456,6 +481,7 @@ body.schedule{
     font-weight: 700;
 }
 
+/* Delete button for events in editing mode */
 .event .event-del{
     flex: 0 0 auto;
     inline-size: 28px;
@@ -533,8 +559,9 @@ body.schedule{
 
 /* ============ Applies Page ============ */
 
+/* Table wrapper for horizontal scrolling */
 .table-wrap{
-    overflow-x: auto;
+    overflow-x: auto;   /* Horizontal scroll for wide tables */
     overflow-y: hidden;
     border-radius: 16px;
     background: #fff;
@@ -542,6 +569,7 @@ body.schedule{
     padding: 12px;
     margin-bottom: 40px;
 }
+
 
 .applies-table{
     border-collapse: separate;
@@ -608,6 +636,7 @@ body.schedule{
     align-items: center;
 }
 
+/* Column widths */
 .applies-table td:nth-child(1){min-width: 110px !important;}
 .applies-table td:nth-child(2){min-width: 300px !important;}
 .applies-table td:nth-child(3){min-width: 300px !important;}
@@ -623,7 +652,7 @@ body.schedule{
 .applies-table td:nth-child(10){min-width: 100px !important;}
 
 
-
+/* Save / Delete buttons */
 .btn-actions{
     border-color: var(--uf-brown-dark);
     width: 80px;
@@ -663,10 +692,12 @@ body.schedule{
 
 /* ============ Grades page tables ============ */
 
+/* Table wrapper for horizontal scrolling */
 .grades-page .table-wrap{
     overflow-x: visible;
 }
 
+/* Reuse applies table styles */
 .grades-page .applies-table{
     width: 100%;
     min-width: 0;
@@ -705,6 +736,7 @@ body.schedule{
 .grades-page .grades-table--assessments th.col-title,
 .grades-page .grades-table--assessments td.col-title{ width: auto;}
 
+/* Smaller inputs inside grades page tables */
 .grades-page .applies-table .form-control{
     height: 36px;
     padding: 4px 8px;
@@ -716,7 +748,7 @@ body.schedule{
     font-size: .85rem;
 }
 
-/* For the TERMS cards */
+/* Term Accordion cards */
 .grades-page .term-card{
     border: 0;
     background: transparent;
@@ -836,6 +868,7 @@ body.schedule{
     padding: 1.2rem 1.5rem;
 }
 
+/* Deadline badges */
 .badge-due-soon {background: #832b28 !important;}
 .badge-due-mid {background: #6a5a31 !important;}
 .badge-due-ok {background: #56745c !important;}
@@ -878,7 +911,7 @@ body.schedule{
     text-align: center;
 }
 
-/*Checkboxes on stages table */
+/* Custom checkbox styles (used ChatGPT to learn how to do this, then adapted) */
 
 .stages-table input[type="checkbox"].form-check-input {
     appearance: none;
@@ -921,7 +954,7 @@ body.schedule{
 /* ============ Mobile tweaks ============ */
 @media (max-width: 576px){
     :root{
-        --nav-h: 56px;
-        --slot-h: 40px;
+        --nav-h: 56px;  /* Smaller navbar height */
+        --slot-h: 40px;    /* Smaller slot height in schedule */
     }
 }
