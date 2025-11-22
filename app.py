@@ -9,6 +9,9 @@ app.secret_key = "change-this-in-prod"
 
 db = SQL()
 
+# For some parts of this file (mainly the aggregation logic for grades / overviews) i used ChatGPT to learn and refine techniques and ideas to improve my code structure (all code is written by me) 
+
+# Simple fallaback DDL for users table (if not exists)
 CREATE_USERS_SQL = """
 CREATE TABLE IF NOT EXISTS users(
     id INTEget PRIMARY KEY AUTOINCREMENT,
@@ -19,27 +22,33 @@ CREATE TABLE IF NOT EXISTS users(
 """
 
 try:
+
+    # Try to ensure users table exists (at app start)
     db.execute(CREATE_USERS_SQL)
 except Exception as e:
     print("DB init error:", e)
 
 # ================ ROUTES ================
 
+# Authentication, home, dashboard, schedule, applications, grades, assignments
 @app.route("/")
 def welcome():
     # Navbar is not shown in the welcome page
     return render_template("welcome.html", show_nav=False)
 
+# Signup route
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
+
+        # Read and normilize inputs
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         confirm = request.form.get("confirm", "")
 
-        # Validation:
-
+        # Validation on required fields
+ 
         if not username or not email or not password or not confirm:
             flash("Please fill in all fields.", "warning")
             return redirect(url_for("signup"))
@@ -52,15 +61,19 @@ def signup():
             flash("Please enter a valid email address.", "warning")
             return redirect(url_for("signup"))
 
+        # Hash the password before storing it in the database
         pw_hash = generate_password_hash(password, method="pbkdf2:sha256", salt_length=16)
 
         try:
+            # Insert the new user into the database
             db.execute(
                 "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)",
                 username, email, pw_hash
             )
         
         except sqlite3.IntegrityError as e:
+
+            # Handle unique constraint violations for username/email
             if "username" in str(e):
                 flash("Username already exists. Try another one.", "danget")
             
@@ -77,12 +90,16 @@ def signup():
 
     return render_template("signup.html", show_nav=False)
 
+# Login route
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+
+        # Read and normalize inputs
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
 
+        # Lookup user by email
         rows = db.execute(
             "SELECT id, username, email, hash FROM users WHERE email = ?",
             email
@@ -93,10 +110,13 @@ def login():
             return redirect(url_for("login"))
 
         user = rows[0]
+
+        # Verify password
         if not check_password_hash(user["hash"], password):
             flash("Invalid email or password.", "danget")
             return redirect(url_for("login"))
 
+        # Store user info in session
         session["user_id"] = user["id"]
         session["username"] = user["username"]
         session["email"] = user["email"]
@@ -105,6 +125,7 @@ def login():
     
     return render_template("login.html", show_nav=False)
 
+# Home / Dashboard route
 @app.route("/home")
 def home():
     if "user_id" not in session:
@@ -112,7 +133,7 @@ def home():
     
     uid = session["user_id"]
 
-    # Assignments: only those with due in next 7 days (excluding done)
+    # Assignments: count only those due in the next 7 days and not done (used chatGPT to refine this type of date-filtering SQL queries but wrote all code myself)
     assignments_due = db.execute (
         "SELECT COUNT(*) AS c FROM assignments "
         "WHERE user_id = ? "
@@ -131,7 +152,7 @@ def home():
         uid
     )[0]["c"]
 
-    # Next application closing date
+    # Next application closing date (soonest close_date in the future)
     next_closing = db.execute (
         "SELECT MIN(close_date) AS d FROM applications "
         "WHERE user_id = ?  AND close_date IS NOT NULL "
@@ -139,14 +160,14 @@ def home():
         uid
     )[0]["d"]
 
-    # Overall grade
+    # Overall grade: weighted average across all modules 
     mods = db.execute(
         "SELECT id, credits FROM modules WHERE user_id = ?",
         uid
     )
 
-    total_c = 0.0
-    acc = 0.0
+    total_c = 0.0 # total credits
+    acc = 0.0     # sum of grade * credits
 
     for m in mods:
         rows = db.execute(
@@ -156,8 +177,8 @@ def home():
         if not rows:
             continue
 
-        w_sum = 0.0
-        ws = 0.0
+        w_sum = 0.0     # sum of weights with scores
+        ws = 0.0        # sum of weight * score
 
         for r in rows:
             w = float(r["weight_pct"] or 0)
@@ -175,6 +196,7 @@ def home():
     
     overall_grade = round(acc / total_c, 2) if total_c > 0 else None
 
+    # Collect overview data for template
     overview = {
         "assignments_due_7d": assignments_due,
         "apps_active": apps_active,
@@ -184,8 +206,11 @@ def home():
     
     return render_template("home.html", show_nav=True, username=session.get("username"), overview=overview)
 
+# Logout route
 @app.route("/logout")
 def logout():
+
+    # Clear all session data and redirect to welcome page
     session.clear()
     flash("Logged out succesfully.", "info")
     return redirect(url_for("welcome"))
@@ -196,12 +221,13 @@ def logout():
 # Days helper
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-# Main page:
+# Schedule main page:
 @app.route("/schedule", methods=["GET"])
 def schedule_page():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
+    # Load schedule items for the logged-in user
     rows = db.execute(
         "SELECT id, weekday, start_time, end_time, title, notes "
         "FROM schedule_items WHERE user_id = ? "
@@ -210,7 +236,7 @@ def schedule_page():
     )
     print("SCHEDULE rows for user", session["user_id"], "=>", rows)  # <— ΔΕΣ ΤΟ LOG
 
-    # group the rows by weekday
+    # Group rows by weekday for easier rendering
     items_by_day = {i: [] for i in range(7)}
 
     for r in rows:
@@ -219,6 +245,7 @@ def schedule_page():
 
     return render_template("schedule.html", show_nav=True, items_by_day=items_by_day, days=DAYS)
 
+# Save (add/update) a slot on schedule table
 @app.route("/schedule/save", methods=["POST"])
 def schedule_save():
     if "user_id" not in session:
@@ -231,7 +258,7 @@ def schedule_save():
     title = (request.form.get("title") or "").strip()
     notes = (request.form.get("notes") or "").strip()
 
-    # def to check that time is in HH::MM format and valid
+    # Helper to check valid time format HH:MM
     def valid_time(t):
         if not t or len(t) != 5 or t[2] != ":":
             return False
@@ -261,8 +288,10 @@ def schedule_save():
         flash("Please enter a title", "warning")
         return redirect(url_for("schedule_page"))
     
-    # update/insert logic stays the same
+    # Update or Insert 
     if item_id_raw:
+
+        # Update existing item
         try:
             item_id = int(item_id_raw)
         except:
@@ -285,6 +314,7 @@ def schedule_save():
         flash("Slot updated", "success")
     
     else:
+        # Insert new item
         db.execute(
             "INSERT INTO schedule_items(user_id, weekday, start_time, end_time, title, notes) "
             "VALUES (?, ?, ?, ?, ?, ?)",
@@ -314,7 +344,7 @@ def schedule_delete(item_id):
     flash("Slot deleted", "success")
     return redirect(url_for("schedule_page"))
 
-# clear the whole table
+# Clear the whole table
 @app.route("/schedule/clear", methods=["POST"])
 def schedule_clear():
     if "user_id" not in session:
@@ -331,6 +361,7 @@ def schedule_clear():
 
 # ================ APPLICATIONS ================
 
+# Application status / CV / other choices
 STATUS_CHOICES = [
     "Not Applied",
     "Interested",
@@ -350,6 +381,7 @@ STATUS_CHOICES = [
 CV_CHOICES = ["Yes", "No"]
 OPT_CHOICES = ["Yes", "No", "Optional"]
 
+# Applications main page
 @app.route("/applications", methods=["GET"])
 def applications_page():
     if "user_id" not in session:
@@ -368,6 +400,7 @@ def applications_page():
         OPT_CHOICES = OPT_CHOICES
     )
 
+# Create a new application
 @app.route("/applications/add", methods=["POST"])
 def applications_add():
     if "user_id" not in session:
@@ -383,10 +416,12 @@ def applications_add():
     written = request.form.get("written", "Optional").strip()
     notes = request.form.get("notes", "").strip()
 
+    # Validations
     if status not in STATUS_CHOICES or cv not in CV_CHOICES or cover not in OPT_CHOICES or written not in OPT_CHOICES:
         flash("Invalid selection.", "warning")
         return redirect(url_for("applications_page"))
     
+    # Required fields
     if not company or not programme:
         flash("Please fill Company and Programme.", "warning")
         return redirect(url_for("applications_page"))
@@ -400,6 +435,7 @@ def applications_add():
     flash("Application added.", "success")
     return redirect(url_for("applications_page"))
 
+# Update an existing application
 @app.route("/applications/<int:app_id>/update", methods=["POST"])
 def applications_update(app_id):
     if "user_id" not in session:
@@ -436,6 +472,7 @@ def applications_update(app_id):
     flash("Saved.", "success")
     return redirect(url_for("applications_page"))
 
+# Delete an application
 @app.route("/applications/<int:app_id>/delete", methods=["POST"])
 def applications_delete(app_id):
     if "user_id" not in session:
@@ -453,9 +490,11 @@ def applications_delete(app_id):
 
 # ================ GRADES ================
 
+# Helper to calculate per-module stats
+# Used ChatGPT to learn techniques for weighted averages and data aggregation but wrote all code myself
 def _calc_module_stats(module_id: int):
 
-    # it calculates the weight of the assessments and the grade
+    # It calculates the weight of the assessments and the grade
     rows = db.execute(
         "SELECT weight_pct, score_pct FROM assessments WHERE module_id = ?",
         module_id
@@ -466,8 +505,8 @@ def _calc_module_stats(module_id: int):
     
     total_weight = sum((r["weight_pct"] or 0) for r in rows)
     
-    w_sum = 0.0
-    ws_sum = 0.0
+    w_sum = 0.0     # sum of weights with scores
+    ws_sum = 0.0    # sum of weight * score
 
     for r in rows:
         w = float(r["weight_pct"] or 0)
@@ -482,31 +521,31 @@ def _calc_module_stats(module_id: int):
         
     return (round(total_weight, 2), current_grade, round(w_sum, 2), current_points)
 
-
+# Grades main page
 @app.route("/grades", methods=["GET"])
 def grades_page():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
-    # Load modules
+    # Load modules for the user
     modules = db.execute(
         "SELECT id, name, term, credits FROM modules WHERE user_id = ? ORDER BY term, name",
         session["user_id"]
     )
 
-    # building assessments_by_module and modules_by_term
+    # Building assessments_by_module and modules_by_term
     assessments_by_module = {}
     modules_by_term = {}
 
     for m in modules:
-        #load assessments for each module
+        # Load assessments for each module
         arows = db.execute(
             "SELECT id, title, weight_pct, score_pct FROM assessments WHERE module_id = ? ORDER BY id",
             m["id"]
         )
         assessments_by_module[m["id"]] = arows
         
-        # computing per-module stats
+        # Computing per-module stats
         total_w, cur_grade, w_with_score, cur_points = _calc_module_stats(m["id"])
 
         m["total_weight"] = total_w
@@ -535,7 +574,7 @@ def grades_page():
             "avg": t_avg,
         }
     
-    # Build courses map
+    # Build courses map to combine repeated modules with the same name across terms
     courses_map = {}
 
     for term, mods in modules_by_term.items():
@@ -551,7 +590,7 @@ def grades_page():
                 
                 "name": cname, 
                 "ects_total" : 0.0,
-                "terms": {},            # term -> {"credits": float, "pairs": [(grade, credits), ...]}
+                "terms": {},            # term -> { "points": float }
             })
 
             agg["ects_total"] += credits
@@ -559,7 +598,7 @@ def grades_page():
             tentry = agg["terms"].setdefault(term, {"points": 0.0})
             tentry["points"] += points
 
-    # collapse for templates and overall
+    # Collapse for templates and calculate overall averages
     courses_overall = []
     for cname, agg in courses_map.items():
         per_terms = []
@@ -578,8 +617,10 @@ def grades_page():
             "per_terms": per_terms,
         })
 
+    # Sort courses alphabetically
     courses_overall.sort(key=lambda x: x["name"].lower())
 
+    # Calculate overall average based on overall points for each course
     vals = [c["overall"] for c in courses_overall if isinstance(c.get("overall"), (int, float))]
     overall_avg = round(sum(vals) / len(vals), 2) if vals else None
 
@@ -591,13 +632,13 @@ def grades_page():
                            overall_avg = overall_avg, 
                            courses_overall=courses_overall)
 
-# -------- Modules: create / update / delete ----------
-
+# Add a new module
 @app.route("/grades/module/add", methods=["POST"])
 def grades_module_add():
     if "user_id" not in session:
         return redirect(url_for("login"))
     
+    # Simple helper to quickly add a new module with default values
     term = request.args.get("term", type=int) or 1
 
     new_id = db.execute(
@@ -608,6 +649,7 @@ def grades_module_add():
     flash("Module created.", "success")
     return redirect(url_for("grades_page", open=new_id))
 
+# Create a module
 @app.route("/grades/module/create", methods=["POST"])
 def grades_module_create():
     if "user_id" not in session:
@@ -629,6 +671,7 @@ def grades_module_create():
     flash("Module saved.", "success")
     return redirect(url_for("grades_page"))
 
+# Update an existing module
 @app.route("/grades/module/<int:module_id>/update", methods=["POST"])
 def grades_module_update(module_id):
     if "user_id" not in session:
@@ -657,6 +700,7 @@ def grades_module_update(module_id):
     flash("Module updated.", "success")
     return redirect(url_for("grades_page"))
 
+# Delete a module
 @app.route("/grades/modules/<int:module_id>/delete", methods=["POST"])
 def grades_module_delete(module_id):
     if "user_id" not in session:
@@ -677,8 +721,7 @@ def grades_module_delete(module_id):
     return redirect(url_for("grades_page"))
 
 
-# -------- Assessments: create / update / delete ----------
-
+# Create a new assessment for a module
 @app.route("/grades/modules/<int:module_id>/assessment/create", methods=["POST"])
 def grades_assessment_create(module_id):
     if "user_id" not in session:
@@ -696,7 +739,7 @@ def grades_assessment_create(module_id):
     weight_raw = request.form.get("weight_pct")
     score_raw =  request.form.get("score_pct")
 
-    # parsing numbers safely
+    # Parsing numbers safely (empty strings -> None)
     try:
         weight = float(weight_raw)
     except:
@@ -719,6 +762,7 @@ def grades_assessment_create(module_id):
     flash("Assessment added.", "success")
     return redirect(url_for("grades_page"))
 
+# Update an existing assessment
 @app.route("/grades/assessment/<int:assessment_id>/update", methods=["POST"])
 def grades_assessment_update(assessment_id):
     if "user_id" not in session:
@@ -736,7 +780,7 @@ def grades_assessment_update(assessment_id):
     weight_raw = request.form.get("weight_pct")
     score_raw =  request.form.get("score_pct")
 
-    # parsing numbers safely
+    # Parsing numbers safely (empty strings -> None)
     try:
         weight = float(weight_raw)
     except:
@@ -759,7 +803,7 @@ def grades_assessment_update(assessment_id):
     flash("Assessment updated.", "success")
     return redirect(url_for("grades_page"))
 
-
+# Delete an assessment
 @app.route("/grades/assessment/<int:assessment_id>/delete", methods=["POST"])
 def grades_assessment_delete(assessment_id):
     if "user_id" not in session:
@@ -779,6 +823,7 @@ def grades_assessment_delete(assessment_id):
 
 # ================ ASSIGNMENTS ================
 
+# Helper to auto-assign priority based on due date
 def auto_priority(due_date_str):
     if not due_date_str:
         return 3
@@ -797,7 +842,7 @@ def auto_priority(due_date_str):
 
     return 3
 
-
+# Helper to compute assignment status based on stages (done/in_progress/pending)
 def compute_assignment_status(assignment_id):
 
     stages = db.execute(
@@ -821,7 +866,7 @@ def compute_assignment_status(assignment_id):
     return progress, status
 
 
-# ----- main page ------
+# Assignments main page
 @app.route("/assignments", methods=["GET"])
 def assignments_page():
     if "user_id" not in session:
@@ -829,7 +874,7 @@ def assignments_page():
     
     user_id = session["user_id"]
 
-    # assignments sorted by priority + due date
+    # Assignments sorted by priority and due date
     assignments = db.execute (
         "SELECT id, title, due_date, notes, priority, created_at, updated_at "
         "FROM assignments WHERE user_id = ? "
@@ -839,7 +884,7 @@ def assignments_page():
         user_id
     )
 
-    # all stages
+    # Load stages for all assignments of the user
     stage_rows = db.execute (
         "SELECT id, assignment_id, title, done, position " 
         "FROM assignments_stages "
@@ -848,6 +893,7 @@ def assignments_page():
         user_id
     )
 
+    # Group stages by assignment_id
     stages_by_assignment = {}
 
     for s in stage_rows:
@@ -856,7 +902,7 @@ def assignments_page():
     
     return render_template("assignments.html", show_nav=True, assignments=assignments, stages_by_assignment=stages_by_assignment, today=date.today().isoformat())
 
-# ------ Add assignment ------
+# Add a new assignment
 @app.route("/assignments/add", methods=["POST"])
 def assignments_add():
     if "user_id" not in session:
@@ -877,7 +923,7 @@ def assignments_add():
     flash("Assignment created", "success")
     return redirect(url_for("assignments_page", open=new_id))
 
-# ------ Update assignment ---------
+# Update an existing assignment
 @app.route("/assignments/<int:assignment_id>/update", methods=["POST"])
 def assignments_update(assignment_id):
     if "user_id" not in session:
@@ -895,7 +941,7 @@ def assignments_update(assignment_id):
     notes = (request.form.get("notes") or "").strip()
     status = (request.form.get("status") or "pending").strip()
 
-    # For just saving the notes
+    # When saving notes only, keep existing title and due_date
     if not title:
         row2 = db.execute("SELECT title, due_date FROM assignments WHERE id = ?", assignment_id)
         title = row2[0]["title"]
@@ -911,7 +957,7 @@ def assignments_update(assignment_id):
     flash("Assignment updated", "success")
     return redirect(url_for("assignments_page"))
 
-# ------ Delete assignment -------
+# Delete an assignment
 @app.route("/assignments/<int:assignment_id>/delete", methods=["POST"])
 def assignments_delete(assignment_id):
     if "user_id" not in session:
@@ -932,7 +978,7 @@ def assignments_delete(assignment_id):
     return redirect(url_for("assignments_page"))
 
 
-# -------- Add stage ------------
+# Add a new stage to an assignment
 @app.route("/assignments/<int:assignment_id>/stage/add", methods=["POST"])
 def stage_add(assignment_id):
     if "user_id" not in session:
@@ -950,6 +996,7 @@ def stage_add(assignment_id):
         flash("Stage title cannot be empty", "warning")
         return redirect(url_for("assignments_page"))
     
+    # Compute next position
     next_pos = db.execute (
         "SELECT COALESCE(MAX(position), 0) AS maxp FROM assignments_stages WHERE assignment_id = ?", assignment_id
     )[0]["maxp"] + 1
@@ -963,7 +1010,7 @@ def stage_add(assignment_id):
     return redirect(url_for("assignments_page"))
 
 
-# --------- Toggle stage done ----------
+# Toggle stage done/not done
 @app.route("/assignments/stage/<int:stage_id>/toggle", methods=["POST"])
 def stage_toggle(stage_id):
     if "user_id" not in session:
@@ -980,6 +1027,7 @@ def stage_toggle(stage_id):
     if not row or row[0]["user_id"] != session["user_id"]:
         abort(403)
     
+    # Flip the done flag (1 -> 0 , 0 -> 1)
     db.execute (
         "UPDATE assignments_stages SET done = CASE done WHEN 1 THEN 0 ELSE 1 END WHERE id = ?", stage_id
     )    
@@ -987,7 +1035,7 @@ def stage_toggle(stage_id):
     flash("Stage updated", "success")
     return redirect(url_for("assignments_page"))
 
-# ------- Delete stage ---------
+# Delete stage
 @app.route("/assignments/stage/<int:stage_id>/delete", methods=["POST"])
 def stage_delete(stage_id):
     if "user_id" not in session:
@@ -1008,6 +1056,7 @@ def stage_delete(stage_id):
         "DELETE FROM assignments_stages WHERE id = ?", stage_id
     )
 
+    # Recompute assignment status after stage deletion
     compute_assignment_status(row[0]["assignment_id"])
 
     flash("Stage deleted", "success")
@@ -1017,7 +1066,6 @@ def stage_delete(stage_id):
 # ===============================
 
 if __name__ == "__main__":
+    
+    # Run the app in debug mode for development
     app.run(debug=True)
-
-
-
