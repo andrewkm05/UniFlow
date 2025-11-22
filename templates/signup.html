@@ -2,7 +2,12 @@
 
 {% block title %}Sign Up ~ UniFlow {% endblock %}
 
-{% block content %}
+{% block content %} 
+
+<!-- 
+    Sign Up Page for UniFlow
+    Uses Bootstrap for styling and layout and custom CSS classes
+-->
 
 <section class="container py-5 my-4">
 
@@ -11,14 +16,17 @@
         Sign Up
     </h1>
 
-    <!-- Form card -->
+    <!-- Form card wrapper: Responsive centering with Bootstrap grid breakpoints for different screen sizes -->
     <div class="row justify-content-center form-wrap">
 
         <div class="col-12 col-md-8 col-lg-6 uf-card">
 
             <div class="card shadow-lg border-0 rounded-4 p-4">
 
-                <!-- Sign Up Form -->
+                <!-- 
+                    Main Sign Up Form. I used novalidate to disable default HTML5 validation
+                    so that I can implement custom validation in the flask backend
+                -->
                 <form action="{{ url_for('signup') }}" method="POST" novalidate>
 
                     <!-- Username -->
