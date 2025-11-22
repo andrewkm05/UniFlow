@@ -6,7 +6,10 @@
 
 <div class="container-xl assignments-page" style="margin-top: 80px;">
 
-    <!-- Header: Title + Add button -->
+    <!-- 
+        Header: Title + Add button 
+        The button makes a POST request to create a new assignment and redirect to assignments page
+    -->
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h1 class="fw-bold display-6 text-uppercase">ASSIGNMENTS</h1>
 
@@ -19,15 +22,24 @@
         </form>
     </div>
 
+    <!--
+        If no assignments, show info alert
+        Else, list assignments with their stages and notes
+    -->
     {% if not assignments %}
         <div class="alert alert-info">No assignments yet. Click <strong>Add +</strong> to create your first one.</div>
     {% endif %}
 
+    <!--
+        Main list of assignments
+        Each assignment card shows title, due date, priority, stages, and notes
+    -->
     <div class="d-flex flex-column gap-3">
         {% for a in assignments %}
             {% set stages = stages_by_assignment.get(a.id, []) %}
             {% set ns = namespace(done=0) %}
 
+            <!-- Count completed stages -->
             {% for s in stages %}
                 {% if s.done %}
                     {% set ns.done = ns.done + 1 %}
@@ -35,18 +47,22 @@
             {% endfor %}
 
             <div class="card shadow-sm border-0 assignment" data-assignment-id="{{ a.id }}">
-                <!-- Header -->
+                <!-- Header section of the assignment card -->
                 <div class="card-header bg-white">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        
+                        <!-- Title, due date, priority -->
                         <div class="d-flex align-items-center gap-3">
                             <strong class="fs-5">{{ a.title }}</strong>
 
+                            <!-- Badge for due date -->
                             {% if a.due_date %}
                                 <span class="badge rounded-pill js-due-badge">Due: {{ a.due_date }}</span>
                             {% else %}
                                 <span class="badge rounded-pill text-bg-light text-muted">No due date</span>
                             {% endif %}
 
+                            <!-- Priotity badge (being produces by auto-priority in backend) -->
                             <span class="badge rounded-pill
                                         {% if a.priority == 1%}badge-due-soon
                                         {% elif a.priority == 2 %}badge-due-mid
@@ -62,6 +78,7 @@
                             </span>
                         </div>
 
+                        <!-- Progress and action buttons -->
                         <div class="d-flex align-items-center gap-2">
                             <small class="text-muted">{{ ns.done }}/{{ stages|length }} completed</small>
 
@@ -71,7 +88,10 @@
                     </div>
                 </div>
 
-                <!-- Body: stages + notes -->
+                <!-- 
+                    Body: stages + notes 
+                    Initially hidden, toggled by "Open" button
+                -->
                 <div class="assignment-body" hidden>
                     <div class="card-body">
 
@@ -87,8 +107,12 @@
                                 </thead>
 
                                 <tbody>
+
+                                    <!-- List existing stages -->
                                     {% for s in stages %}
                                     <tr>
+
+                                        <!-- Done checkbox -->
                                         <td class="align-middle col-done">
                                             <form action="{{ url_for('stage_toggle', stage_id=s.id) }}" method="post" class="m-0">
                                                 <input class="form-check-input" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if s.done else '' }}>
@@ -116,6 +140,8 @@
                                         </td>
 
                                         <td class="align-middle col-stages">
+                                            
+                                            <!-- Form to add a new stage -->
                                             <form action="{{ url_for('stage_add', assignment_id=a.id) }}" id="stage-new-{{ a.id }}" method="post" class="row g-2 m-0">                                                
                                                     <input class="form-control" name="title" placeholder="Add a stage" required>                                                
                                             </form>
@@ -137,6 +163,7 @@
                                 Notes
                             </label>
                             
+                            <!-- Notes textarea -->
                             <textarea class="form-control" name="notes">{{ a.notes or '' }}</textarea>
 
                             <div class="mt-2">
@@ -177,6 +204,7 @@
                             </div>
                         </form>
 
+                        <!-- Delete entire assignment -->
                         <form action="{{ url_for('assignments_delete', assignment_id=a.id) }}" method="post" class="m-0" onsubmit="return confirm('Delete this assignment?')">
                             <button class="btn btn-pill btn-actions" type="submit">
                                 Delete
