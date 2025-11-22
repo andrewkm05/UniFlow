@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-<!-- Used ChatGPT only for guidance on Bootstrap layout structure -->
+<!-- Used ChatGPT only for guidance on Bootstrap layout structure and for refining inline comments / organisation (implementation is my own) -->
 {% block title %}Applications ~ UniFlow{% endblock %}
 
 {% block content %}
@@ -38,13 +38,20 @@
                         </tr>
                     </thead>
 
+                    <!--
+                        Main table body: Create new application row + Existing application rows
+                    -->
                     <tbody id="appsBody">
 
-                        {# --------------- CREATE ROW (POST /applications/add) ---------------#}
-                        <!-- This creates new application entry row, initially hidden -->
+                        <!--
+                            Create new application row (hidden by default, shown when "Add +" button is clicked)
+                            method: POST /applications/add
+                        -->
                         <tbody id="createRow" style="display: none;">
                             <tr>
                                 <form method="post" action="{{ url_for('applications_add') }}">
+                                    
+                                    <!-- Staus dropdown with predefined choices -->
                                     <td>
                                         <select class="form-select" name="status">
                                             {% for s in STATUS_CHOICES %}
@@ -106,10 +113,18 @@
 
                         {# --------------- EXISTING ROWS (POST /applications/<id>/update + delete) ---------------#}
                         
+                        <!--
+                            Existing application rows: Each row is a form to update or delete the application    
+                        -->
                         <tbody id="appsBody">
                         
                             {% for app in applications %}
                             <tr>
+
+                                <!--
+                                    Update application form
+                                    method: POST /applications/<id>/update
+                                -->
                                 <form method="post" action="{{ url_for('applications_update', app_id=app.id) }}">
 
                                     <td>
@@ -164,10 +179,15 @@
                                         <textarea class="form-control" name="notes" placeholder="Notes">{{ app.notes or '' }}</textarea>
                                     </td>
 
+                                    <!-- Row action buttons: Save and Delete -->
                                     <td class="row-actions">
                                         <button class="btn btn-pill btn-actions" type="submit">Save</button>
                                 </form>
 
+                                        <!--
+                                            Delete application form
+                                            method: POST /applications/<id>/delete
+                                        -->
                                         <form method="post" action="{{ url_for('applications_delete', app_id=app.id) }}" onsubmit="return confirm('Delete this entry?')">
                                             <button class="btn btn-pill btn-actions" type="submit">Delete</button>
                                         </form>
