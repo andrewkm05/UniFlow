@@ -929,12 +929,13 @@ body.schedule{
 
 /* Custom checkbox styles (used ChatGPT to learn how to do this, then adapted) */
 
-.stages-table input[type="checkbox"].form-check-input {
+.stages-table input[type="checkbox"].form-check-input,
+.assignment-complete-toggle {
     appearance: none;
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
-    border: 2px solid var(--uf-brown);
+    border: 2px solid var(--uf-brown) !important;
     border-radius: 4px;
     display: inline-block;
     position: relative;
@@ -943,7 +944,8 @@ body.schedule{
     transition: all 0.2 ease;
 }
 
-.stages-table input[type="checkbox"].form-check-input:checked {
+.stages-table input[type="checkbox"].form-check-input:checked, 
+.assignment-complete-toggle:checked{
     background-color: var(--uf-brown);
 }
 
