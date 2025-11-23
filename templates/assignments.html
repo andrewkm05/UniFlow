@@ -57,7 +57,7 @@
                         <div class="d-flex align-items-center gap-3">
 
                             <!-- Completion checkbox -->
-                            <form action="{{ url_for('assignments_toggle_done', assignment_id=a.id) }}" method="post" class="m-0">
+                            <form action="{{ url_for('assignment_toggle_done', assignment_id=a.id) }}" method="post" class="m-0">
                                 <input class="form-check-input assignment-complete-toggle" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if a.status == 'done' else '' }}>
                             </form>
 
