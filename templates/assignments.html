@@ -62,7 +62,7 @@
                             </form>
 
                             <!-- Title -->
-                            <strong class="fs-5">{{ a.title }}</strong>
+                            <strong class="fs-5 {% if a.status == 'done' %}text-muted text-decoration-line-through{% endif %}">{{ a.title }}</strong>
 
                             <!-- Badge for due date -->
                             {% if a.due_date %}
