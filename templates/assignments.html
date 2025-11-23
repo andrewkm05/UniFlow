@@ -46,13 +46,22 @@
                 {% endif %}
             {% endfor %}
 
-            <div class="card shadow-sm border-0 assignment" data-assignment-id="{{ a.id }}">
+            <div class="card shadow-sm border-0 assignment" data-assignment-id="{{ a.id }}" data-status=""{{ a.status }}>
+                
                 <!-- Header section of the assignment card -->
                 <div class="card-header bg-white">
+                    
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                         
-                        <!-- Title, due date, priority -->
+                        <!-- Title completion checkbox, due date, priority -->
                         <div class="d-flex align-items-center gap-3">
+
+                            <!-- Completion checkbox -->
+                            <form action="{{ url_for('assignments_toggle_done', assignment_id=a.id) }}" method="post" class="m-0">
+                                <input class="form-check-input assignment-complete-toggle" type="checkbox" name="done" onchange="this.form.submit()" {{ 'checked' if a.status == 'done' else '' }}>
+                            </form>
+
+                            <!-- Title -->
                             <strong class="fs-5">{{ a.title }}</strong>
 
                             <!-- Badge for due date -->
@@ -62,20 +71,10 @@
                                 <span class="badge rounded-pill text-bg-light text-muted">No due date</span>
                             {% endif %}
 
-                            <!-- Priotity badge (being produces by auto-priority in backend) -->
-                            <span class="badge rounded-pill
-                                        {% if a.priority == 1%}badge-due-soon
-                                        {% elif a.priority == 2 %}badge-due-mid
-                                        {% else %}badge-due-ok{% endif %}">
-                                
-                                        {% if a.priority == 1%}
-                                            Urgent
-                                        {% elif a.priority == 2 %}
-                                            Normal
-                                        {% else %}
-                                            Low
-                                        {% endif %}
-                            </span>
+                            <!-- Priotity badge (filled via JS based on date being produces by auto-priority in backend) -->
+                            {% if a.due_date and a.status != 'done' %}
+                                <span class="badge rounded-pill js-priority-badge"></span>
+                            {% endif %}
                         </div>
 
                         <!-- Progress and action buttons -->
