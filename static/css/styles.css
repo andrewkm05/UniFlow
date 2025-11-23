@@ -115,6 +115,8 @@ body{
 /* ============ Welcome (without navbar) ============ */
 
 /* Flex container centering the hero content */
+
+/* Used ChatGPT to learn how to use the clamp() function for responsive sizing and adapted it to my needs */
 .hero-inner{
     display: flex;
     flex-direction: column;
@@ -396,7 +398,7 @@ body.schedule{
     z-index: 2;
 }
 
-/* Bckground grid lines for day columns */
+/* Background grid lines for day columns */
 .day-col::before{
     content: "";
     position: absolute;
@@ -424,6 +426,7 @@ body.schedule{
 }
 
 /* Background grid lines for day slot list */
+/*Used ChatGPT to learn how to use the repeating-linear-gradient function, then adapted it to my needs */
 .day-list::before{
     content: "";
     position: absolute;
@@ -440,7 +443,7 @@ body.schedule{
 }
 
 /* Top border for first slot in each day */
-.day-list .slot:first-child{
+.day-list .slot{
     border-top: 1.5px solid var(--uf-brown-dark) !important;
 }
 
