@@ -20,15 +20,40 @@ function autoResizeTextarea(t) {
     t.style.height = (t.scrollHeight || t.offsetHeight) + "px";
 }
 
+// Helper: compute category of due date based on days difference
+function getDueCategory(diffDays) {
+    if(diffDays <0)
+        return "overdue";
+    else if(diffDays <=3)
+        return "urgent";
+    else if(diffDays <=14)
+        return "soon";
+    else
+        return "low";
+}
+
 // Main DOMContentLoaded handler. Sets up all assignment cards UI behavior
 // Used ChatGPT specifically to improve structure of DOM event handling around toggling panels/learned about requestAnimationFrame (implementation is my own)
 document.addEventListener("DOMContentLoaded", () => {
 
     const openSet = loadOpen();
 
+    // Map of due date categories to badge classes
+    const badgeClassMap = {
+        "overdue": "badge-due-overdue",
+        "urgent": "badge-due-urgent",
+        "soon": "badge-due-soon",
+        "low": "badge-due-low"
+    };
+    
+    // All possible badge classes (to remove when updating)
+    // Used ChatGPT to learn how to get object values in JS (implementation is my own)
+    const allBadgeClasses = Object.values(badgeClassMap);
+
     // Toggle open/close logic for each assignment card
     document.querySelectorAll(".assignment").forEach(card => {
-        const id = card.dataset.assignmentId;
+        const id = card.dataset.assignmentId;   // Get assignment ID
+        const status = card.dataset.status; // Get assignment status ("done", "in progress", "pending")
 
         const bodyBtn = card.querySelector(".js-toggle-body");
         const setBtn = card.querySelector(".js-toggle-settings");
@@ -98,32 +123,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
             saveOpen(openSet);                            
         });
-    });
+    
+        // Due date and priority badge per assignment
+        const dueBadge = card.querySelector(".js-due-badge");
+        const priorityBadge = card.querySelector(".js-priority-badge");
 
-    // Highlight due-dates based on how soon they are
-    document.querySelectorAll(".js-due-badge").forEach(badge => {
-        const m = badge.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+        
+        if(dueBadge){
 
-        if(!m)
-            return;
+            const m = dueBadge.textContent.match(/(\d{4})-(\d{2})-(\d{2})/); // Match YYYY-MM-DD
+            
+            if(m){
+                const y = Number(m[1]), mon = Number(m[2]), d = Number(m[3]); // Extract year, month, day
+                
+                const due = new Date(y, mon - 1, d); // Due date
+                const today = new Date();   // Current date
+                today.setHours(0, 0, 0, 0);
 
-        const y = Number(m[1]), mon = Number(m[2]), d = Number(m[3]);
-        const due = new Date(y, mon - 1, d);
+                const diff = Math.round((due - today) / (1000 * 60 * 60 * 24)); // Difference in days
+                const category = getDueCategory(diff);
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+                // Style the due date badge
+                dueBadge.classList.remove(...allBadgeClasses);
+                
+                if(category && badgeClassMap[category]){
+                    dueBadge.classList.add(badgeClassMap[category]);
+                }
 
-        const diff = Math.round((due - today) / (1000 * 60 * 60 * 24));
+                // Style and label the priority badge (only if due date is not overdue)
+                if(priorityBadge && status !== "done"){ 
+                    priorityBadge.classList.remove(...allBadgeClasses);
 
-        badge.classList.remove("text-bg-secondary", "badge-due-soon", "badge-due-mid", "badge-due-ok");
-
-        if(diff <= 3)
-            badge.classList.add("badge-due-soon");
-
-        else if(diff <=7 )
-            badge.classList.add("badge-due-mid");
-        else
-            badge.classList.add("badge-due-ok");
+                    // badgeClassMap: overdue, urgent, soon, low 
+                    if(category && badgeClassMap[category]){
+                        priorityBadge.classList.add(badgeClassMap[category]); 
+                        
+                        if(category === "overdue")
+                            priorityBadge.textContent = "Overdue";
+                        else if(category === "urgent")
+                            priorityBadge.textContent = "Urgent";
+                        else if(category === "soon")
+                            priorityBadge.textContent = "Soon";
+                        else
+                            priorityBadge.textContent = "Low";
+                    }
+                }
+            }
+        }
     });
 
     // Auto-resize textareas
