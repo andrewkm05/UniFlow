@@ -835,12 +835,13 @@ def auto_priority(due_date_str):
     
     diff = (due - date.today()).days
 
+    if diff < 0:
+        return 0    # overdue
     if diff <= 3:
-        return 1
-    if diff <= 7:
-        return 2
-
-    return 3
+        return 1    # urgent
+    if diff <= 14:
+        return 2    # soon
+    return 3        # low
 
 # Helper to compute assignment status based on stages (done/in_progress/pending)
 def compute_assignment_status(assignment_id):
@@ -876,13 +877,25 @@ def assignments_page():
 
     # Assignments sorted by priority and due date
     assignments = db.execute (
-        "SELECT id, title, due_date, notes, priority, created_at, updated_at "
+        "SELECT id, title, due_date, notes, priority, status, created_at, updated_at "
         "FROM assignments WHERE user_id = ? "
         "ORDER BY priority ASC, "
         "CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, "
         "due_date ASC, id DESC",
         user_id
     )
+
+    # Recompute priority dynamically so it always respects today's date
+    for a in assignments:
+        a["priority"] = auto_priority(a["due_date"])
+
+    # Sort by priority, due_date, id descending
+    # Used chatGPT to learn about custom sorting with multiple criteria but wrote all code myself
+    def sort_key(a):
+        due_key = a["due_date"] or "9999-12-31"
+        return (a["priority"], due_key, -a["id"])
+    
+    assignments.sort(key=sort_key)
 
     # Load stages for all assignments of the user
     stage_rows = db.execute (
@@ -1027,10 +1040,14 @@ def stage_toggle(stage_id):
     if not row or row[0]["user_id"] != session["user_id"]:
         abort(403)
     
+    assignment_id = row[0]["assignment_id"]
+    
     # Flip the done flag (1 -> 0 , 0 -> 1)
     db.execute (
         "UPDATE assignments_stages SET done = CASE done WHEN 1 THEN 0 ELSE 1 END WHERE id = ?", stage_id
     )    
+
+    compute_assignment_status(assignment_id)
 
     flash("Stage updated", "success")
     return redirect(url_for("assignments_page"))
@@ -1051,15 +1068,45 @@ def stage_delete(stage_id):
 
     if not row or row[0]["user_id"] != session["user_id"]:
         abort(403)
+
+    assignment_id = row[0]["assignment_id"]
     
     db.execute (
         "DELETE FROM assignments_stages WHERE id = ?", stage_id
     )
 
     # Recompute assignment status after stage deletion
-    compute_assignment_status(row[0]["assignment_id"])
+    compute_assignment_status(assignment_id)
 
     flash("Stage deleted", "success")
+    return redirect(url_for("assignments_page"))
+
+
+# Toggle whole assignment done/not done
+@app.route("/assignments/<int:assignment_id>/toggle_done", methods=["POST"])
+def assignment_toggle_done(assignment_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    row = db.execute (
+        "SELECT user_id, status FROM assignments WHERE id = ?", assignment_id
+    )
+
+    if not row or row[0]["user_id"] != session["user_id"]:
+        abort(403)
+    
+    current_status = row[0]["status"]
+
+    if current_status == "done":
+        compute_assignment_status(assignment_id)  # recompute based on stages
+    else:
+        # Mark as done directly
+        db.execute (
+            "UPDATE assignments SET status = 'done', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            assignment_id
+        )
+    
+    flash("Assignment status updated", "success")
     return redirect(url_for("assignments_page"))
     
 
