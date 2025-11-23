@@ -875,12 +875,12 @@ body.schedule{
 }
 
 .badge-due-urgent{
-    background-color: #9e0702 !important;
+    background-color: #810b07 !important;
     color: #fff !important;
 }
 
 .badge-due-soon{
-    background-color: #d6963c !important;
+    background-color: #b8973d !important;
     color: #fff !important;
 }
 

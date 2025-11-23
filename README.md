@@ -98,9 +98,9 @@ A structured table that allows the student to:
 - Automatically highlight assignments based on priority (urgent, normal, low)
 - Notes per assignment
 
-Each assignment receives a priority badge based on how close the due date is, and overdue items are also highlighted.
+Each assignment receives a priority badge based on how close the due date is, and the due date itselfnis color-coded with JavaScript (red for urgent, yellow for soon, green for low priority, and strong red for overdue items).
 
-The UI supports autosizing textareas and dynamic updates for a smooth workflow.
+Completed stages are visually marked with a strikethrough, and the UI supports autosizing textareas and smooth open/close panels for a clean workflow.
 
 ---
 
