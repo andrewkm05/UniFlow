@@ -127,8 +127,13 @@
                                 -->
                                 <form method="post" action="{{ url_for('applications_update', app_id=app.id) }}">
 
-                                    <td>
-                                        <select class="form-select" name="status">
+                                    <td class="
+                                        status-cell
+                                        {% if app.status == 'Offer Received'%}status-offer
+                                        {% elif app.status == 'Rejected'%}status-rejected
+                                        {% endif %}
+                                    ">
+                                        <select class="form-select status-select" name="status">
                                             {% for s in STATUS_CHOICES %}
                                                 <option value="{{ s }}" {{ 'selected' if s == app.status else '' }}>{{ s }}</option>
                                             {% endfor %}
