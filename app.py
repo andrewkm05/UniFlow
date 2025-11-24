@@ -609,7 +609,7 @@ def grades_page():
                 continue
 
             credits = float(m.get("credits") or 0.0)
-            points = float(m.get("current_points") or 0.0)
+            grade = m.get("current_grade")
 
             agg = courses_map.setdefault(cname, {
                 
@@ -620,23 +620,37 @@ def grades_page():
 
             agg["ects_total"] += credits
 
-            tentry = agg["terms"].setdefault(term, {"points": 0.0})
-            tentry["points"] += points
+            tentry = agg["terms"].setdefault(term, {"points": 0.0, "credits": 0.0})
+            
+            if grade is not None:
+                tentry["points"] += float(grade) * credits
+                tentry["credits"] += credits
 
     # Collapse for templates and calculate overall averages
     courses_overall = []
     for cname, agg in courses_map.items():
         per_terms = []
         overall_points = 0.0
+        overall_credits = 0.0
 
         for t in sorted(agg["terms"].keys()):
-            pts = round(agg["terms"][t]["points"], 2)
-            per_terms.append({"term": t, "grade": pts})
-            overall_points += pts
+            tdata = agg["terms"][t]
+
+            if tdata["credits"] > 0:
+                term_grade = round(tdata["points"] / tdata["credits"], 2)
+            else:
+                term_grade = None
+
+            per_terms.append({"term": t, "grade": term_grade})
+            
+            overall_points += tdata["points"]
+            overall_credits += tdata["credits"]
+        
+        overall = round(overall_points / overall_credits, 2) if overall_credits > 0 else None
 
         courses_overall.append({
             "name": agg["name"],
-            "overall": round(overall_points, 2),
+            "overall": overall,
             "ects_total": int(agg["ects_total"]) if agg["ects_total"].is_integer() else round(agg["ects_total"], 1),
             "terms_count": len(agg["terms"]),
             "per_terms": per_terms,

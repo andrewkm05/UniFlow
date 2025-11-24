@@ -286,7 +286,7 @@
 
                                 <!-- Terms and CATS -->
                                 <div class="small text-muted">
-                                    {{ c.terms_count }} term{{ 1 if c.terms_count == 1 else 's' }} ({{ c.ects_total / c.terms_count }} CATS)
+                                    {{ c.terms_count }} term{{ '' if c.terms_count == 1 else 's' }} ({{ c.ects_total }} CATS)
                                 </div>
 
                                 {% if c.per_terms %}
