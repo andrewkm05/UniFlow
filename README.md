@@ -113,6 +113,7 @@ Features include:
 - Status selection across many stages
 - Opening and closing date tracking with automatic color coding
 - JavaScript logic that highlights deadlines based on urgency (upcoming or overdue)
+- Status-based styling (green border for "Offer Received" and red for "Rejected")
 - Flags for required documents (CV, cover letter, written answers)
 - Dynamic row editing
 - Large responsive table with equalized column widths
