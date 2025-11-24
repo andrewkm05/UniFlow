@@ -289,6 +289,7 @@ def schedule_save():
         return redirect(url_for("schedule_page"))
     
     # Update or Insert 
+    item_id = None
     if item_id_raw:
 
         # Update existing item
@@ -297,14 +298,38 @@ def schedule_save():
         except:
             flash("Invalid item id", "warning")
             return redirect(url_for("schedule_page"))
-        
+    
+    # Check for overlapping slots
+    params = [session["user_id"], weekday]
+    query = (
+        "SELECT id, start_time, end_time, title "
+        "FROM schedule_items WHERE user_id = ? AND weekday = ?"
+    )
+
+    # Exclude current item if updating
+    if item_id is not None:
+        query += " AND id != ?"
+        params.append(item_id)
+    
+    existing = db.execute(query, *params)
+    
+    for r in existing:
+        other_start = r["start_time"]
+        other_end = r["end_time"]
+
+        if not (end <= other_start or start >= other_end):
+            flash(f"This slot overlaps with '{r['title']}' ({other_start} - {other_end}). Please choose a different time.", "warning")
+            return redirect(url_for("schedule_page"))
+
+    # If item_id is provided, update existing item
+    if item_id is not None:
         row = db.execute(
             "SELECT user_id FROM schedule_items WHERE id = ?", item_id
         )
 
         if not row or row[0]["user_id"] != session["user_id"]:
             abort(403)
-        
+    
         db.execute(
             "UPDATE schedule_items "
             "SET weekday = ?, start_time = ?, end_time = ?, title = ?, notes = ? "
@@ -312,7 +337,7 @@ def schedule_save():
             weekday, start, end, title, notes, item_id
         )
         flash("Slot updated", "success")
-    
+
     else:
         # Insert new item
         db.execute(
