@@ -678,18 +678,18 @@ body.schedule{
 
 /* Deadlines highlights */
 .deadline-soon{
-    border-color: #832b28 !important;
+    border-color: #c00903 !important;
     background-color: #fff0f0 !important;
-    color: #a94442 !important;
+    color: #df2421 !important;
     transition: all .2s ease;
 }
 
 .deadline-passed{
-    border-color: #b30000 !important;
+    border-color: #570101 !important;
     background-color: #fff0f0 !important;
-    color: #660000 !important;
+    color: #400101 !important;
     font-weight: 600;
-    border-width: 6px;
+    border-width: 10px;
 }
 
 /* Status Highlights */
