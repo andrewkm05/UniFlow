@@ -1,6 +1,6 @@
 # UniFlow - Student Planner & Academic Dashboard
 
-#### Video Demo: 
+#### Video Demo: https://youtu.be/XotuGtBSIi0
 
 #### Description:
 
