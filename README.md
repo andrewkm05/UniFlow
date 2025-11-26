@@ -28,31 +28,32 @@ I wanted a tool that i would genuinely use every day.
 
 ## Project Structure
 
-- `app.py`
-- `db.py`
+-`project/`
+  - `app.py`
+  - `db.py`
+  - `README.md`
+  - `requirements.txt`
+  - `schema.sql`
 
-- `instance/`
-  - `uniflow.db`
+  - `templates/`
+    - `base.html`
+    - `welcome.html`
+    - `signup.html`
+    - `login.html`
+    - `home.html`
+    - `schedule.html`
+    - `assignments.html`
+    - `applications.html`
+    - `grades.html`
 
-- `templates/`
-  - `base.html`
-  - `welcome.html`
-  - `signup.html`
-  - `login.html`
-  - `home.html`
-  - `schedule.html`
-  - `assignments.html`
-  - `applications.html`
-  - `grades.html`
-
-- `static/`
-  - `css/`
-    - `styles.css`
-  - `js/`
-    - `schedule.js`
-    - `assignments.js`
-    - `applications.js`
-    - `grades.js`
+  - `static/`
+    - `css/`
+      - `styles.css`
+    - `js/`
+      - `schedule.js`
+      - `assignments.js`
+      - `applications.js`
+      - `grades.js`
 
 ---
 
@@ -164,11 +165,10 @@ Database consists of:
 - `users`
 - `schedule_items`
 - `assignments`
-- `stages`
+- `assignments_stages`
+- `modules`
+- `assessments`
 - `applications`
-- `grades_term`
-- `grades_modules`
-- `grades_assessments`
 
 #### **db.py**
 A minimal custom wrapper that provides:
